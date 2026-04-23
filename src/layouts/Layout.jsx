@@ -33,7 +33,7 @@ const Layout = ({children}) => {
 
                             {/* Page Content */}
                             <div className="bg-light" style={{ height:'calc(100vh - 75px)' }}>
-                                <div className="p-3">
+                                <div className="p-3 p-md-4">
                                     {children}
                                 </div>
                             </div>

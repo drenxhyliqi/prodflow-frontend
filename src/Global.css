@@ -16,6 +16,10 @@
     background-color: #171C26;
 }
 
+.txt-custom {
+    color: #2662D9 !important;
+}
+
 .aside.closed {
     transform: translateX(-100%);
 }

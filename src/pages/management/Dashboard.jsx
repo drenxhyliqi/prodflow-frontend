@@ -1,10 +1,12 @@
 import React from 'react'
+import Layout from '../..//layouts/Layout'
 
 const Dashboard = () => {
     return (
-        <>
-            <h5>Dashboard</h5>
-        </>
+        <Layout>
+            <h4 className='fw-bold'>Dashboard</h4>
+            <span className='d-inline-block opacity-75'>Factory overview...</span>
+        </Layout>
     )
 }
 
