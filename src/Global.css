@@ -3,3 +3,70 @@
 * {
     font-family: 'Inter', sans-serif;
 }
+
+.aside {
+    background-color: #171C26;
+    height: 100vh;
+    overflow: auto;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+}
+
+.bg-custom {
+    background-color: #171C26;
+}
+
+.aside.closed {
+    transform: translateX(-100%);
+}
+
+.logo {
+    background-color: #171C26;
+    height: 40px;
+}
+
+.border-btm {
+    border-bottom: 0.1px solid #222A39 !important;
+}
+
+#sidebarToggle {
+    width: 100%;
+    text-align: left;
+    border: none;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    background-color: #171C26;
+    color: #898989;
+}
+
+#sidebarToggle:hover {
+    color: #c4c4c4;
+}
+
+.sidebar-link {
+    display: inline-block;
+    width: 100%;
+    padding: 7px;
+    font-size: 14px;
+    color: #c4c4c4;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.sidebar-link:hover {
+    background-color: #222A39;
+    color: #eaeaea;
+}
+
+.sidebar-link-active {
+    background-color: #222A39;
+    color: #eaeaea;
+}
+
+.main {
+    flex: 1;
+    background-color: #ffffff !important;
+    height: 100vh;
+    overflow: auto;
+}
