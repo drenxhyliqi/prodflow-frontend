@@ -16,6 +16,10 @@
     background-color: #171C26;
 }
 
+.txt-custom {
+    color: #2662D9 !important;
+}
+
 .aside.closed {
     transform: translateX(-100%);
 }
@@ -52,6 +56,8 @@
     color: #c4c4c4;
     text-decoration: none;
     border-radius: 10px;
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 .sidebar-link:hover {
