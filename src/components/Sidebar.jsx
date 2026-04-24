@@ -11,7 +11,7 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { LuCalendarCog, LuClipboardList } from 'react-icons/lu'
 import { RiWallet3Line } from 'react-icons/ri'
 import { CiDeliveryTruck } from 'react-icons/ci'
-import { TbReportMoney, TbUsers, TbUserScan } from 'react-icons/tb'
+import { TbReport, TbReportMoney, TbUsers, TbUserScan } from 'react-icons/tb'
 import { GrNotes } from 'react-icons/gr'
 
 const Sidebar = ({ menuVisible, setMenuVisible }) => {
@@ -35,7 +35,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="mainCollapse">
-                    <NavLink to="/" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><MdOutlineDashboard size={18} className='ms-2 me-2'/> Dashboard</NavLink>
+                    <NavLink to="/dashboard" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><MdOutlineDashboard size={18} className='ms-2 me-2'/> Dashboard</NavLink>
                     <NavLink to="/companies" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Companies</NavLink>
                 </div>
             </div>
@@ -127,7 +127,9 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="reportsCollapse">
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><MdMiscellaneousServices size={18} className='ms-2 me-2'/> Reports</NavLink>
+                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
+                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
+                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
                 </div>
             </div>
 

@@ -6,12 +6,14 @@ import Materials from "../pages/management/Materials"
 import Machines from "../pages/management/Machines"
 import Production from "../pages/management/Production"
 import Planification from "../pages/management/Planification"
+import Login from "../pages/Login"
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/products" element={<Products />} />
         <Route path="/materials" element={<Materials />} />
