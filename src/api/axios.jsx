@@ -1,11 +1,8 @@
-import React from 'react'
+import React from 'react';
+import axios from 'axios';
 
-const Axios = () => {
-    return (
-        <>
-        
-        </>
-    )
-}
+const api = axios.create({
+    baseURL: 'http://localhost:3000/api'
+});
 
-export default Axios
+export default api;
