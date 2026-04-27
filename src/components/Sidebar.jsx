@@ -3,7 +3,7 @@ import '../Global.css'
 import { FaAngleDown, FaBoxesStacked, FaRegChartBar, FaTruckRampBox, FaUsers, FaWarehouse } from 'react-icons/fa6'
 import { MdMiscellaneousServices, MdOutlineDashboard, MdOutlineShoppingCart } from 'react-icons/md'
 import { HiBuildingOffice2 } from 'react-icons/hi2'
-import prodflow from '../assets/img/prodflow.png';
+import prodflow from '../assets/img/prodflow_logo.png';
 import { AiOutlineClose } from 'react-icons/ai'
 import { Link, NavLink } from 'react-router-dom'
 import { BsBoxes } from 'react-icons/bs'
