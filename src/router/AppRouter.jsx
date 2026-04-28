@@ -5,6 +5,7 @@ import Products from "../pages/management/Products"
 import Materials from "../pages/management/Materials"
 import Machines from "../pages/management/Machines"
 import Production from "../pages/management/Production"
+import Staff from "../pages/management/Staff"
 import Planification from "../pages/management/Planification"
 import Clients from "../pages/management/Clients"
 import Login from "../pages/Login"
@@ -21,13 +22,13 @@ const AppRouter = () => {
         <Route path="/machines" element={<Machines />} />
         <Route path="/production" element={<Production />} />
         <Route path="/planification" element={<Planification />} />
-<<<<<<< Updated upstream
-=======
         <Route path="/staff" element={<Staff />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
->>>>>>> Stashed changes
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
   )
