@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaAngleDown } from 'react-icons/fa6'
 import { HiBuildingOffice2 } from 'react-icons/hi2'
 import { LuMenu } from 'react-icons/lu'
@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
 const Header = ({ menuVisible, setMenuVisible }) => {
+    const [allCompanies, setAllCompanies] = useState([]);
+    const [activeCompany, setActiveC] = useState(null);
     const navigate = useNavigate();
     const user = localStorage.getItem('user') ?? null;
 
@@ -32,6 +34,47 @@ const Header = ({ menuVisible, setMenuVisible }) => {
         }
     };
 
+    // Read Companies
+    function getCompanies() {
+        let url = `/admin/all_companies`;
+        api.get(url)
+            .then(response => {
+                setAllCompanies(response.data);
+            })
+            .catch(() => {
+                toast.error('Failed to fetch companies.');
+            });
+    }
+
+    // Active Company
+    function getActiveCompany() {
+        let url = `/admin/active_company`;
+        api.get(url)
+            .then(response => {
+                setActiveC(response.data);
+            })
+            .catch(() => {
+                toast.error('Failed to fetch active company.');
+            });
+    }
+
+    // Activate Company
+    function setActiveCompany(id) {
+        api.post(`/admin/set_active_company/${id}`)
+            .then(response => {
+                getActiveCompany();
+                navigate('/dashboard');
+            })
+            .catch(() => {
+                toast.error('Failed to set active company.');
+            });
+    }
+
+    useEffect(() => {
+        getCompanies();
+        getActiveCompany();
+    }, []);
+
     return (
         <header className='border-bottom bg-white'>
             <div className="d-flex justify-content-between align-items-center p-3">
@@ -41,14 +84,16 @@ const Header = ({ menuVisible, setMenuVisible }) => {
                     </button>
                 </div>
                 <div>
-                    <div className="d-inline dropdown-center me-2 d-none d-md-inline">
-                        <button className='btn btn-transparent bg-secondary bg-opacity-25 border-0 rounded-3' type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <small className='d-flex align-items-center'><HiBuildingOffice2 size={18} className='me-2 txt-custom'/> Alpha Fabric <FaAngleDown className='ms-1'/></small>
-                        </button>
-                        <ul className="dropdown-menu shadow-sm rounded-4">
-                            <li><button className="dropdown-item" type="button"><HiBuildingOffice2 size={18} className='me-2 txt-custom'/> Beta Fabric</button></li>
-                            <li><button className="dropdown-item" type="button"><HiBuildingOffice2 size={18} className='me-2 txt-custom'/> Gamma Fabric</button></li>
-                        </ul>
+                    <div className="d-inline me-2 d-none d-md-inline">
+                        <select className="rounded-4 shadow-sm py-1 px-3 bg-light border-secondary" value={activeCompany || ''} onChange={(e) => setActiveCompany(parseInt(e.target.value))}>
+                            {allCompanies.length === 0 ? (
+                                <option value="">Prod Flow</option>
+                            ) : (
+                                allCompanies.map((cmp) => (
+                                    <option key={cmp.cid} value={cmp.cid}>{cmp.name}</option>
+                                ))
+                            )}
+                        </select>
                     </div>
                     <div className="d-inline dropdown-end me-2 d-none d-md-inline">
                         <button className='btn btn-transparent border-0 opacity-75' type="button" data-bs-toggle="dropdown" aria-expanded="false">
