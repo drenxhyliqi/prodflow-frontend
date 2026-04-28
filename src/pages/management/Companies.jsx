@@ -28,13 +28,13 @@ const Companies = () => {
         const location = document.getElementById('location').value;
         api.post('/admin/create_company', { name, sector, location })
             .then(response => {
-                toast.success('Company created successfully.');
+                toast.success(response.data.message);
                 getCompanies();
                 clearFields();
                 setSubmitting(false);
             })
             .catch(error => {
-                toast.error('Failed to create company.');
+                toast.error(error.response.data.message || 'Failed to create company.');
                 setSubmitting(false);
             });
     }
@@ -73,7 +73,7 @@ const Companies = () => {
                 setEditCompany(response.data);
             })
             .catch(error => {
-                toast.error('No information found.');
+                toast.error(error.response.data.message || 'No information found.');
                 setSubmitting(false);
             });
     }
@@ -88,13 +88,13 @@ const Companies = () => {
         const location = document.getElementById('location').value;
         api.post('/admin/update_company', { cid, name, sector, location })
             .then(response => {
-                toast.success('Company updated successfully.');
+                toast.success(response.data.message);
                 setSubmitting(false);
                 setEditCompany(null)
                 getCompanies();
             })
             .catch(error => {
-                toast.error('Failed to update company.');
+                toast.error(error.response.data.message || 'Failed to update company.');
                 setSubmitting(false);
             });
     }
@@ -103,12 +103,12 @@ const Companies = () => {
     function handleDelete(){
         api.get(`/admin/delete_company/${deleteId}`)
             .then(response => {
-                toast.success('Company deleted successfully.');
+                toast.success(response.data.message);
                 getCompanies();
                 setDeleteId(null);
             })
             .catch(error => {
-                toast.error('Failed to delete company.');
+                toast.error(error.response.data.message || 'Failed to delete company.');
                 setDeleteId(null);
             });
     }
