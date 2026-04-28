@@ -6,6 +6,7 @@ import Materials from "../pages/management/Materials"
 import Machines from "../pages/management/Machines"
 import Production from "../pages/management/Production"
 import Planification from "../pages/management/Planification"
+import Clients from "../pages/management/Clients"
 import Login from "../pages/Login"
 
 const AppRouter = () => {
@@ -20,6 +21,13 @@ const AppRouter = () => {
         <Route path="/machines" element={<Machines />} />
         <Route path="/production" element={<Production />} />
         <Route path="/planification" element={<Planification />} />
+<<<<<<< Updated upstream
+=======
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<h1>404 Not Found</h1>} />
+>>>>>>> Stashed changes
       </Routes>
     </BrowserRouter>
   )
