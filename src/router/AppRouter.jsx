@@ -8,6 +8,8 @@ import Production from "../pages/management/Production"
 import Staff from "../pages/management/Staff"
 import Planification from "../pages/management/Planification"
 import Clients from "../pages/management/Clients"
+import Expenses from "../pages/management/Expenses"
+import Suppliers from "../pages/management/Suppliers"
 import Login from "../pages/Login"
 
 const AppRouter = () => {
@@ -24,6 +26,8 @@ const AppRouter = () => {
         <Route path="/planification" element={<Planification />} />
         <Route path="/staff" element={<Staff />} />
         <Route path="/clients" element={<Clients />} />
+        <Route path="/expenses" element={<Expenses />} />
+        <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
         <Route path="/staff" element={<Staff />} />

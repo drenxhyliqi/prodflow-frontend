@@ -118,7 +118,6 @@ const Clients = () => {
         document.getElementById('client').value = '';
         document.getElementById('phone').value = '';
         document.getElementById('location').value = '';
-        document.getElementById('company_id').value = '';
     }
 
     useEffect(() => {
@@ -134,7 +133,7 @@ const Clients = () => {
             {!editClient && (
                 <>
                     <h4 className='fw-bold'>Clients</h4>
-                    <small className='d-inline-block opacity-75'>Manage registered clients by client</small>
+                    <small className='d-inline-block opacity-75'>Manage registered clients by company</small>
                 </>
             )}
 
@@ -243,7 +242,7 @@ const Clients = () => {
                                     <tbody>
                                         {clients.length === 0 ? (
                                             <tr>
-                                                <td colSpan="6" className="text-center">No data to show...</td>
+                                                <td colSpan="5" className="text-center">No data to show...</td>
                                             </tr>
                                         ) : (
                                             clients.map((client, index) => (
@@ -275,7 +274,7 @@ const Clients = () => {
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>Confirm deletion</strong>
-                                        <p className="mb-0 small text-muted">Are you sure you want to delete this ad with <strong>#ID: {deleteId}</strong>?</p>
+                                        <p className="mb-0 small text-muted">Are you sure you want to delete this client with <strong>#ID: {deleteId}</strong>?</p>
                                     </div>
                                     <button className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)}></button>
                                 </div>
