@@ -4,16 +4,13 @@ import api from '../../api/axios'
 import { toast } from 'react-toastify'
 import { MdOutlineAddBox } from 'react-icons/md'
 import Paginate from '../../components/Paginate'
-import { FaSearch } from 'react-icons/fa'
+import { FaSearch, FaEdit } from 'react-icons/fa'
 import { useLocation } from 'react-router-dom'
-import { FaEdit } from 'react-icons/fa'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdDeleteOutline } from 'react-icons/md'
 
 const Staff = () => {
     const [rows, setRows] = useState([])
-    const [companies, setCompanies] = useState([])
-    const [companyId, setCompanyId] = useState('')
     const [editRow, setEditRow] = useState(null)
     const [deleteId, setDeleteId] = useState(null)
     const [pagination, setPagination] = useState({})
@@ -21,28 +18,16 @@ const Staff = () => {
     const [search, setSearch] = useState('')
     const location = useLocation()
 
-    function loadCompanies() {
-        api.get('/admin/companies?page=1')
-            .then((res) => {
-                setCompanies(res.data.data || [])
-            })
-            .catch(() => toast.error('Failed to load companies.'))
-    }
-
     function getStaff(page = 1, searchValue = '') {
-        if (!companyId) {
-            setRows([])
-            setPagination({})
-            return
-        }
-        let url = `/admin/staff?company_id=${companyId}&page=${page}`
+        let url = `/admin/staff?page=${page}`
         if (searchValue && searchValue.trim() !== '') {
             url += `&search=${encodeURIComponent(searchValue.trim())}`
         }
+
         api.get(url)
             .then((response) => {
-                setRows(response.data.data)
-                setPagination(response.data)
+                setRows(response.data.data || [])
+                setPagination(response.data || {})
             })
             .catch(() => {
                 toast.error('Failed to fetch staff.')
@@ -51,30 +36,22 @@ const Staff = () => {
 
     function createStaff(e) {
         e.preventDefault()
-        if (!companyId) {
-            toast.error('Select a company first.')
-            return
-        }
         setSubmitting(true)
+
         const name = document.getElementById('name').value
         const surname = document.getElementById('surname').value
         const position = document.getElementById('position').value
         const contact = document.getElementById('contact').value
-        api.post('/admin/create_staff', {
-            name,
-            surname,
-            position,
-            contact,
-            company_id: Number(companyId),
-        })
+
+        api.post('/admin/create_staff', { name, surname, position, contact })
             .then(() => {
                 toast.success('Staff created successfully.')
                 getStaff()
                 clearFields()
                 setSubmitting(false)
             })
-            .catch(() => {
-                toast.error('Failed to create staff.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to create staff.')
                 setSubmitting(false)
             })
     }
@@ -83,60 +60,57 @@ const Staff = () => {
         e.preventDefault()
         const value = e.target.search.value.trim()
         const params = new URLSearchParams(location.search)
-        params.set('search', value)
-        params.set('page', 1)
-        if (companyId) params.set('company_id', companyId)
+
+        if (value) params.set('search', value)
+        else params.delete('search')
+
+        params.set('page', '1')
         window.history.pushState({}, '', `?${params.toString()}`)
         getStaff(1, value)
     }
 
     function checkEditStaff(id) {
-        api.get(`/admin/edit_staff/${id}?company_id=${companyId}`)
+        api.get(`/admin/edit_staff/${id}`)
             .then((response) => {
                 setEditRow(response.data)
             })
-            .catch(() => {
-                toast.error('No information found.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'No information found.')
             })
     }
 
     function updateStaff(e) {
         e.preventDefault()
         setSubmitting(true)
+
         const sid = document.getElementById('sid').value
         const name = document.getElementById('name').value
         const surname = document.getElementById('surname').value
         const position = document.getElementById('position').value
         const contact = document.getElementById('contact').value
-        api.post('/admin/update_staff', {
-            sid,
-            company_id: Number(companyId),
-            name,
-            surname,
-            position,
-            contact,
-        })
+
+        api.post('/admin/update_staff', { sid, name, surname, position, contact })
             .then(() => {
                 toast.success('Staff updated successfully.')
                 setSubmitting(false)
                 setEditRow(null)
                 getStaff()
             })
-            .catch(() => {
-                toast.error('Failed to update staff.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to update staff.')
                 setSubmitting(false)
             })
     }
 
     function handleDelete() {
-        api.get(`/admin/delete_staff/${deleteId}?company_id=${companyId}`)
+        api.get(`/admin/delete_staff/${deleteId}`)
             .then(() => {
                 toast.success('Staff deleted successfully.')
                 getStaff()
                 setDeleteId(null)
             })
-            .catch(() => {
-                toast.error('Failed to delete staff.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to delete staff.')
                 setDeleteId(null)
             })
     }
@@ -148,33 +122,13 @@ const Staff = () => {
         document.getElementById('contact').value = ''
     }
 
-    const onCompanyChange = (e) => {
-        const id = e.target.value
-        setCompanyId(id)
-        const params = new URLSearchParams(location.search)
-        if (id) params.set('company_id', id)
-        else params.delete('company_id')
-        params.set('page', 1)
-        window.history.pushState({}, '', `?${params.toString()}`)
-        setSearch('')
-    }
-
-    useEffect(() => {
-        loadCompanies()
-    }, [])
-
     useEffect(() => {
         const params = new URLSearchParams(location.search)
-        const page = params.get('page') || 1
+        const page = Number(params.get('page') || 1)
         const urlSearch = params.get('search') || ''
-        const cid = params.get('company_id') || ''
-        setCompanyId(cid)
+
         setSearch(urlSearch)
-        if (cid) getStaff(page, urlSearch)
-        else {
-            setRows([])
-            setPagination({})
-        }
+        getStaff(page, urlSearch)
     }, [location.search])
 
     return (
@@ -182,7 +136,7 @@ const Staff = () => {
             {!editRow && (
                 <>
                     <h4 className="fw-bold">Staff</h4>
-                    <small className="d-inline-block opacity-75">Manage staff by company</small>
+                    <small className="d-inline-block opacity-75">Manage staff</small>
                 </>
             )}
 
@@ -197,32 +151,6 @@ const Staff = () => {
                 </button>
             )}
 
-            {!editRow && (
-                <div className="card rounded-4 mt-3">
-                    <div className="card-header rounded-4">
-                        <span className="fw-semibold">Company</span>
-                    </div>
-                    <div className="card-body">
-                        <label className="form-label" htmlFor="company_id">
-                            Select company (required for list &amp; create)
-                        </label>
-                        <select
-                            id="company_id"
-                            className="form-select rounded-4 shadow-none"
-                            value={companyId}
-                            onChange={onCompanyChange}
-                        >
-                            <option value="">— Choose —</option>
-                            {companies.map((c) => (
-                                <option key={c.cid} value={String(c.cid)}>
-                                    {c.name} (#{c.cid})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            )}
-
             {editRow && (
                 <div className="card rounded-4 mt-3">
                     <div className="card-header rounded-4">
@@ -235,9 +163,7 @@ const Staff = () => {
                             <input type="hidden" id="sid" name="sid" value={editRow.sid} required />
                             <div className="row g-3">
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="name" className="form-label">
-                                        Name
-                                    </label>
+                                    <label htmlFor="name" className="form-label">Name</label>
                                     <input
                                         type="text"
                                         defaultValue={editRow.name}
@@ -247,9 +173,7 @@ const Staff = () => {
                                     />
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="surname" className="form-label">
-                                        Surname
-                                    </label>
+                                    <label htmlFor="surname" className="form-label">Surname</label>
                                     <input
                                         type="text"
                                         defaultValue={editRow.surname}
@@ -259,9 +183,7 @@ const Staff = () => {
                                     />
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="position" className="form-label">
-                                        Position
-                                    </label>
+                                    <label htmlFor="position" className="form-label">Position</label>
                                     <input
                                         type="text"
                                         defaultValue={editRow.position}
@@ -271,9 +193,7 @@ const Staff = () => {
                                     />
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="contact" className="form-label">
-                                        Contact
-                                    </label>
+                                    <label htmlFor="contact" className="form-label">Contact</label>
                                     <input
                                         type="text"
                                         defaultValue={editRow.contact || ''}
@@ -308,27 +228,19 @@ const Staff = () => {
                             <form method="post" onSubmit={createStaff}>
                                 <div className="row g-3">
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="name" className="form-label">
-                                            Name
-                                        </label>
+                                        <label htmlFor="name" className="form-label">Name</label>
                                         <input type="text" className="form-control rounded-4 shadow-none" id="name" required />
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="surname" className="form-label">
-                                            Surname
-                                        </label>
+                                        <label htmlFor="surname" className="form-label">Surname</label>
                                         <input type="text" className="form-control rounded-4 shadow-none" id="surname" required />
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="position" className="form-label">
-                                            Position
-                                        </label>
+                                        <label htmlFor="position" className="form-label">Position</label>
                                         <input type="text" className="form-control rounded-4 shadow-none" id="position" required />
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="contact" className="form-label">
-                                            Contact
-                                        </label>
+                                        <label htmlFor="contact" className="form-label">Contact</label>
                                         <input type="text" className="form-control rounded-4 shadow-none" id="contact" />
                                     </div>
                                     <div className="col-12">
@@ -361,46 +273,28 @@ const Staff = () => {
                                             defaultValue={search}
                                             className="form-control rounded-start-4 shadow-none"
                                             placeholder="Search..."
-                                            disabled={!companyId}
                                         />
-                                        <button className="btn btn-primary rounded-end-4" type="submit" disabled={!companyId}>
+                                        <button className="btn btn-primary rounded-end-4" type="submit">
                                             <FaSearch />
                                         </button>
                                     </div>
                                 </form>
                             </div>
+
                             <div className="table-responsive">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th className="text-nowrap" scope="col">
-                                                #
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Name
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Surname
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Position
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Contact
-                                            </th>
-                                            <th className="text-end text-nowrap" scope="col">
-                                                Operations
-                                            </th>
+                                            <th className="text-nowrap" scope="col">#</th>
+                                            <th className="text-nowrap" scope="col">Name</th>
+                                            <th className="text-nowrap" scope="col">Surname</th>
+                                            <th className="text-nowrap" scope="col">Position</th>
+                                            <th className="text-nowrap" scope="col">Contact</th>
+                                            <th className="text-end text-nowrap" scope="col">Operations</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {!companyId ? (
-                                            <tr>
-                                                <td colSpan="6" className="text-center">
-                                                    Select a company to load staff.
-                                                </td>
-                                            </tr>
-                                        ) : rows.length === 0 ? (
+                                        {rows.length === 0 ? (
                                             <tr>
                                                 <td colSpan="6" className="text-center">
                                                     No data to show...
@@ -436,7 +330,8 @@ const Staff = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            {companyId ? <Paginate data={pagination} /> : null}
+
+                            <Paginate data={pagination} />
                         </div>
                     </div>
 

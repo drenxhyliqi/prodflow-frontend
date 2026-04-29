@@ -4,9 +4,8 @@ import api from '../../api/axios'
 import { toast } from 'react-toastify'
 import { MdOutlineAddBox } from 'react-icons/md'
 import Paginate from '../../components/Paginate'
-import { FaSearch } from 'react-icons/fa'
+import { FaSearch, FaEdit } from 'react-icons/fa'
 import { useLocation } from 'react-router-dom'
-import { FaEdit } from 'react-icons/fa'
 import { IoIosArrowBack } from 'react-icons/io'
 import { MdDeleteOutline } from 'react-icons/md'
 
@@ -14,8 +13,6 @@ const todayISO = () => new Date().toISOString().slice(0, 10)
 
 const Production = () => {
     const [rows, setRows] = useState([])
-    const [companies, setCompanies] = useState([])
-    const [companyId, setCompanyId] = useState('')
     const [productOptions, setProductOptions] = useState([])
     const [machineOptions, setMachineOptions] = useState([])
     const [editRow, setEditRow] = useState(null)
@@ -25,71 +22,54 @@ const Production = () => {
     const [search, setSearch] = useState('')
     const location = useLocation()
 
-    function loadCompanies() {
-        api.get('/admin/companies?page=1')
-            .then((res) => setCompanies(res.data.data || []))
-            .catch(() => toast.error('Failed to load companies.'))
-    }
-
-    function loadDropdowns(cid) {
-        if (!cid) {
-            setProductOptions([])
-            setMachineOptions([])
-            return
-        }
-        api.get(`/admin/products?company_id=${cid}&page=1`)
+    function loadDropdowns() {
+        api.get('/admin/products?page=1')
             .then((res) => setProductOptions(res.data.data || []))
             .catch(() => setProductOptions([]))
-        api.get(`/admin/machines?company_id=${cid}`)
-            .then((res) => setMachineOptions(Array.isArray(res.data) ? res.data : []))
+
+        api.get('/admin/machines')
+            .then((res) => setMachineOptions(Array.isArray(res.data.data) ? res.data.data : []))
             .catch(() => setMachineOptions([]))
     }
 
-    function fetchProduction(cid, page = 1, searchValue = '') {
-        if (!cid) {
-            setRows([])
-            setPagination({})
-            return
-        }
-        let url = `/admin/production?company_id=${cid}&page=${page}`
+    function fetchProduction(page = 1, searchValue = '') {
+        let url = `/admin/production?page=${page}`
         if (searchValue && searchValue.trim() !== '') {
             url += `&search=${encodeURIComponent(searchValue.trim())}`
         }
+
         api.get(url)
             .then((response) => {
-                setRows(response.data.data)
-                setPagination(response.data)
+                setRows(response.data.data || [])
+                setPagination(response.data || {})
             })
             .catch(() => toast.error('Failed to fetch production.'))
     }
 
     function createProduction(e) {
         e.preventDefault()
-        if (!companyId) {
-            toast.error('Select a company first.')
-            return
-        }
         setSubmitting(true)
+
         const product_id = document.getElementById('product_id').value
         const machine_id = document.getElementById('machine_id').value
         const qty = document.getElementById('qty').value
         const date = document.getElementById('date').value
+
         api.post('/admin/create_production', {
             product_id: Number(product_id),
             machine_id: Number(machine_id),
             qty,
             date,
-            company_id: Number(companyId),
         })
             .then(() => {
                 toast.success('Production registered successfully.')
-                fetchProduction(companyId)
+                fetchProduction()
                 document.getElementById('qty').value = ''
                 document.getElementById('date').value = todayISO()
                 setSubmitting(false)
             })
-            .catch(() => {
-                toast.error('Failed to create production record.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to create production record.')
                 setSubmitting(false)
             })
     }
@@ -98,48 +78,52 @@ const Production = () => {
         e.preventDefault()
         const value = e.target.search.value.trim()
         const params = new URLSearchParams(location.search)
-        params.set('search', value)
+
+        if (value) params.set('search', value)
+        else params.delete('search')
+
         params.set('page', 1)
-        if (companyId) params.set('company_id', companyId)
         window.history.pushState({}, '', `?${params.toString()}`)
-        fetchProduction(companyId || new URLSearchParams(location.search).get('company_id'), 1, value)
+        fetchProduction(1, value)
     }
 
     function checkEditProduction(id) {
-        const cid = companyId || new URLSearchParams(location.search).get('company_id')
-        api.get(`/admin/edit_production/${id}?company_id=${cid}`)
+        api.get(`/admin/edit_production/${id}`)
             .then((response) => {
                 const row = response.data
                 setEditRow(row)
-                api.get(`/admin/products?company_id=${cid}&page=1`).then((r) => {
+
+                api.get('/admin/products?page=1').then((r) => {
                     let list = r.data.data || []
                     if (!list.some((p) => Number(p.pid) === Number(row.product_id))) {
                         list = [...list, { pid: row.product_id, product: row.product }]
                     }
                     setProductOptions(list)
                 })
-                api.get(`/admin/machines?company_id=${cid}`).then((r) => {
-                    let machines = Array.isArray(r.data) ? r.data : []
+
+                api.get('/admin/machines').then((r) => {
+                    let machines = Array.isArray(r.data.data) ? r.data.data : []
                     if (!machines.some((m) => Number(m.mid) === Number(row.machine_id))) {
                         machines = [...machines, { mid: row.machine_id, machine: row.machine, type: null }]
                     }
                     setMachineOptions(machines)
                 })
             })
-            .catch(() => toast.error('No information found.'))
+            .catch((err) => toast.error(err?.response?.data?.message || 'No information found.'))
     }
 
     function updateProduction(e) {
         e.preventDefault()
         setSubmitting(true)
+
         const pid = document.getElementById('pid').value
         const product_id = document.getElementById('product_id').value
         const machine_id = document.getElementById('machine_id').value
         const qty = document.getElementById('qty').value
         const date = document.getElementById('date').value
+
         api.post('/admin/update_production', {
             pid,
-            company_id: Number(companyId),
             product_id: Number(product_id),
             machine_id: Number(machine_id),
             qty,
@@ -149,51 +133,37 @@ const Production = () => {
                 toast.success('Production updated successfully.')
                 setSubmitting(false)
                 setEditRow(null)
-                fetchProduction(companyId)
+                fetchProduction()
             })
-            .catch(() => {
-                toast.error('Failed to update production.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to update production.')
                 setSubmitting(false)
             })
     }
 
     function handleDelete() {
-        api.get(`/admin/delete_production/${deleteId}?company_id=${companyId}`)
+        api.get(`/admin/delete_production/${deleteId}`)
             .then(() => {
                 toast.success('Production deleted successfully.')
-                fetchProduction(companyId)
+                fetchProduction()
                 setDeleteId(null)
             })
-            .catch(() => {
-                toast.error('Failed to delete production.')
+            .catch((err) => {
+                toast.error(err?.response?.data?.message || 'Failed to delete production.')
                 setDeleteId(null)
             })
-    }
-
-    const onCompanyChange = (e) => {
-        const id = e.target.value
-        setCompanyId(id)
-        const params = new URLSearchParams(location.search)
-        if (id) params.set('company_id', id)
-        else params.delete('company_id')
-        params.set('page', 1)
-        window.history.pushState({}, '', `?${params.toString()}`)
-        setSearch('')
     }
 
     useEffect(() => {
-        loadCompanies()
+        loadDropdowns()
     }, [])
 
     useEffect(() => {
         const params = new URLSearchParams(location.search)
         const page = params.get('page') || 1
         const urlSearch = params.get('search') || ''
-        const cid = params.get('company_id') || ''
-        setCompanyId(cid)
         setSearch(urlSearch)
-        fetchProduction(cid, page, urlSearch)
-        loadDropdowns(cid)
+        fetchProduction(page, urlSearch)
     }, [location.search])
 
     return (
@@ -201,7 +171,7 @@ const Production = () => {
             {!editRow && (
                 <>
                     <h4 className="fw-bold">Production</h4>
-                    <small className="d-inline-block opacity-75">Record production by company</small>
+                    <small className="d-inline-block opacity-75">Record production</small>
                 </>
             )}
 
@@ -216,35 +186,6 @@ const Production = () => {
                 </button>
             )}
 
-            {!editRow && (
-                <div className="card rounded-4 mt-3">
-                    <div className="card-header rounded-4">
-                        <span className="fw-semibold">Company</span>
-                    </div>
-                    <div className="card-body">
-                        <label className="form-label" htmlFor="company_id">
-                            Select company (required)
-                        </label>
-                        <select
-                            id="company_id"
-                            className="form-select rounded-4 shadow-none"
-                            value={companyId}
-                            onChange={onCompanyChange}
-                        >
-                            <option value="">— Choose —</option>
-                            {companies.map((c) => (
-                                <option key={c.cid} value={String(c.cid)}>
-                                    {c.name} (#{c.cid})
-                                </option>
-                            ))}
-                        </select>
-                        <p className="small text-muted mb-0 mt-2">
-                            Product and machine dropdowns use the first page of products (10 max) and all machines for this company.
-                        </p>
-                    </div>
-                </div>
-            )}
-
             {editRow && (
                 <div className="card rounded-4 mt-3">
                     <div className="card-header rounded-4">
@@ -257,9 +198,7 @@ const Production = () => {
                             <input type="hidden" id="pid" name="pid" value={editRow.pid} required />
                             <div className="row g-3">
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="product_id" className="form-label">
-                                        Product
-                                    </label>
+                                    <label htmlFor="product_id" className="form-label">Product</label>
                                     <select
                                         id="product_id"
                                         className="form-select rounded-4 shadow-none"
@@ -267,16 +206,12 @@ const Production = () => {
                                         required
                                     >
                                         {productOptions.map((p) => (
-                                            <option key={p.pid} value={String(p.pid)}>
-                                                {p.product}
-                                            </option>
+                                            <option key={p.pid} value={String(p.pid)}>{p.product}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="machine_id" className="form-label">
-                                        Machine
-                                    </label>
+                                    <label htmlFor="machine_id" className="form-label">Machine</label>
                                     <select
                                         id="machine_id"
                                         className="form-select rounded-4 shadow-none"
@@ -291,9 +226,7 @@ const Production = () => {
                                     </select>
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="qty" className="form-label">
-                                        Quantity
-                                    </label>
+                                    <label htmlFor="qty" className="form-label">Quantity</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -301,26 +234,24 @@ const Production = () => {
                                         defaultValue={editRow.qty}
                                         className="form-control rounded-4 shadow-none"
                                         id="qty"
+                                        placeholder="Enter quantity"
                                         required
                                     />
                                 </div>
                                 <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="date" className="form-label">
-                                        Date
-                                    </label>
+                                    <label htmlFor="date" className="form-label">Date</label>
                                     <input
                                         type="date"
                                         defaultValue={String(editRow.date || '').slice(0, 10)}
                                         className="form-control rounded-4 shadow-none"
                                         id="date"
+                                        placeholder="Select date"
                                         required
                                     />
                                 </div>
                                 <div className="col-12">
                                     {submitting ? (
-                                        <button type="button" className="btn btn-success rounded-4" disabled>
-                                            Updating...
-                                        </button>
+                                        <button type="button" className="btn btn-success rounded-4" disabled>Updating...</button>
                                     ) : (
                                         <button type="submit" className="btn btn-success rounded-4 d-flex align-items-center gap-1">
                                             <FaEdit /> Update Production
@@ -343,23 +274,17 @@ const Production = () => {
                             <form method="post" onSubmit={createProduction}>
                                 <div className="row g-3">
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="product_id" className="form-label">
-                                            Product
-                                        </label>
-                                        <select id="product_id" className="form-select rounded-4 shadow-none" required disabled={!companyId}>
+                                        <label htmlFor="product_id" className="form-label">Product</label>
+                                        <select id="product_id" className="form-select rounded-4 shadow-none" required>
                                             <option value="">— Select —</option>
                                             {productOptions.map((p) => (
-                                                <option key={p.pid} value={String(p.pid)}>
-                                                    {p.product}
-                                                </option>
+                                                <option key={p.pid} value={String(p.pid)}>{p.product}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="machine_id" className="form-label">
-                                            Machine
-                                        </label>
-                                        <select id="machine_id" className="form-select rounded-4 shadow-none" required disabled={!companyId}>
+                                        <label htmlFor="machine_id" className="form-label">Machine</label>
+                                        <select id="machine_id" className="form-select rounded-4 shadow-none" required>
                                             <option value="">— Select —</option>
                                             {machineOptions.map((m) => (
                                                 <option key={m.mid} value={String(m.mid)}>
@@ -369,28 +294,16 @@ const Production = () => {
                                         </select>
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="qty" className="form-label">
-                                            Quantity
-                                        </label>
-                                        <input type="number" step="0.01" min="0" className="form-control rounded-4 shadow-none" id="qty" required />
+                                        <label htmlFor="qty" className="form-label">Quantity</label>
+                                        <input type="number" step="0.01" min="0" className="form-control rounded-4 shadow-none" id="qty" placeholder="Enter quantity" required />
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="date" className="form-label">
-                                            Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            className="form-control rounded-4 shadow-none"
-                                            id="date"
-                                            defaultValue={todayISO()}
-                                            required
-                                        />
+                                        <label htmlFor="date" className="form-label">Date</label>
+                                        <input type="date" className="form-control rounded-4 shadow-none" id="date" defaultValue={todayISO()} placeholder="Select date" required />
                                     </div>
                                     <div className="col-12">
                                         {submitting ? (
-                                            <button type="button" className="btn btn-success rounded-4" disabled>
-                                                Saving...
-                                            </button>
+                                            <button type="button" className="btn btn-success rounded-4" disabled>Saving...</button>
                                         ) : (
                                             <button type="submit" className="btn btn-success rounded-4 d-flex align-items-center gap-1">
                                                 <MdOutlineAddBox /> Create Production
@@ -416,50 +329,30 @@ const Production = () => {
                                             defaultValue={search}
                                             className="form-control rounded-start-4 shadow-none"
                                             placeholder="Search..."
-                                            disabled={!companyId}
                                         />
-                                        <button className="btn btn-primary rounded-end-4" type="submit" disabled={!companyId}>
+                                        <button className="btn btn-primary rounded-end-4" type="submit">
                                             <FaSearch />
                                         </button>
                                     </div>
                                 </form>
                             </div>
+
                             <div className="table-responsive">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th className="text-nowrap" scope="col">
-                                                #
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Product
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Machine
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Qty
-                                            </th>
-                                            <th className="text-nowrap" scope="col">
-                                                Date
-                                            </th>
-                                            <th className="text-end text-nowrap" scope="col">
-                                                Operations
-                                            </th>
+                                            <th className="text-nowrap" scope="col">#</th>
+                                            <th className="text-nowrap" scope="col">Product</th>
+                                            <th className="text-nowrap" scope="col">Machine</th>
+                                            <th className="text-nowrap" scope="col">Qty</th>
+                                            <th className="text-nowrap" scope="col">Date</th>
+                                            <th className="text-end text-nowrap" scope="col">Operations</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {!companyId ? (
+                                        {rows.length === 0 ? (
                                             <tr>
-                                                <td colSpan="6" className="text-center">
-                                                    Select a company to load production.
-                                                </td>
-                                            </tr>
-                                        ) : rows.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="6" className="text-center">
-                                                    No data to show...
-                                                </td>
+                                                <td colSpan="6" className="text-center">No data to show...</td>
                                             </tr>
                                         ) : (
                                             rows.map((row) => (
@@ -491,15 +384,13 @@ const Production = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            {companyId ? <Paginate data={pagination} /> : null}
+
+                            <Paginate data={pagination} />
                         </div>
                     </div>
 
                     {deleteId && (
-                        <div
-                            className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3"
-                            style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}
-                        >
+                        <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3" style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}>
                             <div className="bg-white shadow-lg rounded-4 p-3 border">
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
@@ -511,12 +402,8 @@ const Production = () => {
                                     <button type="button" className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)} />
                                 </div>
                                 <div className="d-flex justify-content-end mt-3">
-                                    <button type="button" className="btn btn-light me-2" onClick={() => setDeleteId(null)}>
-                                        Cancel
-                                    </button>
-                                    <button type="button" className="btn btn-danger" onClick={handleDelete}>
-                                        Confirm
-                                    </button>
+                                    <button type="button" className="btn btn-light me-2" onClick={() => setDeleteId(null)}>Cancel</button>
+                                    <button type="button" className="btn btn-danger" onClick={handleDelete}>Confirm</button>
                                 </div>
                             </div>
                         </div>
