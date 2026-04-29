@@ -83,8 +83,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                 <div className="collapse show" id="salesFinanceCollapse">
                     <NavLink to="/clients" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaUsers size={18} className='ms-2 me-2'/> Clients</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><MdOutlineShoppingCart size={18} className='ms-2 me-2'/> Sales</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><RiWallet3Line size={18} className='ms-2 me-2'/> Expenses</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><CiDeliveryTruck size={18} className='ms-2 me-2'/> Suppliers</NavLink>
+                    <NavLink to="/expenses" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><RiWallet3Line size={18} className='ms-2 me-2'/> Expenses</NavLink>
+                    <NavLink to="/suppliers" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><CiDeliveryTruck size={18} className='ms-2 me-2'/> Suppliers</NavLink>
                 </div>
             </div>
 

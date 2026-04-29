@@ -276,7 +276,7 @@ const Companies = () => {
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>Confirm deletion</strong>
-                                        <p className="mb-0 small text-muted">Are you sure you want to delete this ad with <strong>#ID: {deleteId}</strong>?</p>
+                                        <p className="mb-0 small text-muted">Are you sure you want to delete this company with <strong>#ID: {deleteId}</strong>?</p>
                                     </div>
                                     <button className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)}></button>
                                 </div>
