@@ -7,7 +7,7 @@ import api from '../api/axios'
 import '../Global.css'
 import { FaRegUserCircle } from 'react-icons/fa'
 import { toast } from 'react-toastify';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = ({ menuVisible, setMenuVisible }) => {
     const [allCompanies, setAllCompanies] = useState([]);
@@ -102,10 +102,10 @@ const Header = ({ menuVisible, setMenuVisible }) => {
                         <ul className="dropdown-menu shadow-sm rounded-4">
                             <div className="pt-3 text-center">
                                 <FaRegUserCircle size={40} />
-                                <p className="mb-0 fw-semibold">{user ? JSON.parse(user).name : 'User'}</p>
+                                <p className="mb-0 fw-semibold">{user ? JSON.parse(user).user : 'User'}</p>
                                 <small>----------</small>
                             </div>
-                            <li><button className="dropdown-item d-flex align-items-center justify-content-center" type="button"><PiUserFocusBold size={18} className='me-2 txt-custom'/> My Profile</button></li>
+                            <li><Link to='/profile' className="dropdown-item d-flex align-items-center justify-content-center" type="button"><PiUserFocusBold size={18} className='me-2 txt-custom'/> My Profile</Link></li>
                             <li><button className="dropdown-item d-flex align-items-center justify-content-center mb-3" type="button" onClick={handleSignOut}><PiSignOut size={18} className='me-2 txt-custom'/> Sign Out</button></li>
                         </ul>
                     </div>
