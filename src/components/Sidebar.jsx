@@ -67,9 +67,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                 </button>
                 <div className="collapse show" id="stockCollapse">
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><FaRegChartBar size={18} className='ms-2 me-2'/> Products Stock</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><FaRegChartBar  size={18} className='ms-2 me-2'/> Materials Stock</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><FaWarehouse size={18} className='ms-2 me-2'/> Warehouses</NavLink>
-                </div>
+                    <NavLink to="/materials_stock" className="sidebar-link d-flex align-items-center"><FaRegChartBar  size={18} className='ms-2 me-2'/> Materials Stock</NavLink>
+                    <NavLink to="/warehouses" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaWarehouse size={18} className='ms-2 me-2'/> Warehouses</NavLink>               </div>
             </div>
 
             {/* Sales & Finance */}
@@ -97,13 +96,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="humanResourcesCollapse">
-<<<<<<< Updated upstream
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbUsers size={18} className='ms-2 me-2'/> Employees</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbUserScan size={18} className='ms-2 me-2'/> Users</NavLink>
-=======
                     <NavLink to="/staff" className="sidebar-link d-flex align-items-center"><TbUsers size={18} className='ms-2 me-2'/> Staff</NavLink>
                     <NavLink to="/users" className="sidebar-link d-flex align-items-center"><TbUserScan size={18} className='ms-2 me-2'/> Users</NavLink>
->>>>>>> Stashed changes
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReportMoney size={18} className='ms-2 me-2'/> Salaries</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><LuCalendarCog size={18} className='ms-2 me-2'/> Vocations</NavLink>
