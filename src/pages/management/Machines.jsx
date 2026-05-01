@@ -267,13 +267,13 @@ const Machines = () => {
                                         <label htmlFor="machine" className="form-label">
                                             Machine name
                                         </label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="machine" required />
+                                        <input type="text" className="form-control rounded-4 shadow-none" id="machine" placeholder="Enter machine name" required />
                                     </div>
                                     <div className="col-12 col-md-6 col-lg-6">
                                         <label htmlFor="type" className="form-label">
                                             Type
                                         </label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="type" required />
+                                        <input type="text" className="form-control rounded-4 shadow-none" id="type" placeholder="Enter machine type" required />
                                     </div>
                                     <div className="col-12">
                                         {submitting ? (
