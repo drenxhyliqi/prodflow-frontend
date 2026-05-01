@@ -97,7 +97,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                 </button>
                 <div className="collapse show" id="humanResourcesCollapse">
                     <NavLink to="/staff" className="sidebar-link d-flex align-items-center"><TbUsers size={18} className='ms-2 me-2'/> Staff</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbUserScan size={18} className='ms-2 me-2'/> Users</NavLink>
+                    <NavLink to="/users" className="sidebar-link d-flex align-items-center"><TbUserScan size={18} className='ms-2 me-2'/> Users</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReportMoney size={18} className='ms-2 me-2'/> Salaries</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><LuCalendarCog size={18} className='ms-2 me-2'/> Vocations</NavLink>

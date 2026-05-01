@@ -12,6 +12,8 @@ import Clients from "../pages/management/Clients"
 import Expenses from "../pages/management/Expenses"
 import Suppliers from "../pages/management/Suppliers"
 import Login from "../pages/Login"
+import Profile from "../pages/management/Profile"
+import Users from "../pages/management/Users"
 import Warehouses from "../pages/management/Warehouses"
 
 const AppRouter = () => {
@@ -29,10 +31,12 @@ const AppRouter = () => {
         <Route path="/production" element={<Production />} />
         <Route path="/planification" element={<Planification />} />
         <Route path="/staff" element={<Staff />} />
+        <Route path="/users" element={<Users />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
