@@ -15,6 +15,8 @@ import Login from "../pages/Login"
 import Profile from "../pages/management/Profile"
 import Users from "../pages/management/Users"
 import Warehouses from "../pages/management/Warehouses"
+import Maintenances from "../pages/management/Maintenances"
+import CreateSales from "../pages/management/CreateSales"
 
 const AppRouter = () => {
   return (
@@ -33,6 +35,8 @@ const AppRouter = () => {
         <Route path="/staff" element={<Staff />} />
         <Route path="/users" element={<Users />} />
         <Route path="/clients" element={<Clients />} />
+        <Route path="/sales" element={<Sales />} />
+        <Route path="/create-sales" element={<CreateSales />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
