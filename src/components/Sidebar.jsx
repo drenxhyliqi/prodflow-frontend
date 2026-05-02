@@ -113,7 +113,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="maintenanceCollapse">
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><MdMiscellaneousServices size={18} className='ms-2 me-2'/> Maintenance</NavLink>
+                    <NavLink to="/maintenances" className="sidebar-link d-flex align-items-center"><MdMiscellaneousServices size={18} className='ms-2 me-2'/> Maintenance</NavLink>
                 </div>
             </div>
 
