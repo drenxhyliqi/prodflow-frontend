@@ -115,7 +115,15 @@ const Sales = () => {
                                         <tr key={sale.sale_number}>
                                             <td className="text-nowrap">{sale.sale_number}</td>
                                             <td className="text-nowrap">{sale.client}</td>
-                                            <td className="text-nowrap">{sale.date}</td>
+                                            <td className="text-nowrap">
+                                                {sale.date
+                                                    ? new Date(sale.date).toLocaleDateString('en-GB', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric'
+                                                    })
+                                                : '-'}
+                                            </td>
                                             <td className="text-end text-nowrap">
                                                 <Link to={`/invoice/${sale.sale_number}`} className="btn btn-primary btn-sm shadow-sm me-2"><LiaFileInvoiceDollarSolid size={20} /></Link>
                                                 <button onClick={() => checkEditCompany(company.cid)} className="btn btn-success btn-sm shadow-sm me-2"><FaEdit size={20} /></button>
