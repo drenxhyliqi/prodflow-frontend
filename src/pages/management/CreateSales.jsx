@@ -60,26 +60,28 @@ const CreateSales = () => {
 
     // Product Selection
     function handleProductCheck(e, product) {
+        const products_id = product.pid || product.id;
         if (e.target.checked) {
             setSelectedProducts(prev => [
                 ...prev,
                 {
-                    product,
+                    products_id: products_id,
                     qty: 1
                 }
             ]);
         } else {
             setSelectedProducts(prev =>
-                prev.filter(item => item.product !== product)
+                prev.filter(item => item.products_id !== products_id)
             );
         }
     }
 
     // Products QTY
     function handleQtyChange(product, qty) {
+        const products_id = product.pid || product.id;
         setSelectedProducts(prev =>
             prev.map(item =>
-                item.product === product
+                item.products_id === products_id
                     ? { ...item, qty: Number(qty) }
                     : item
             )
@@ -92,7 +94,7 @@ const CreateSales = () => {
         setSubmitting(true);
         api.post('/admin/create_sale', {
             client: clientName.trim() || selectedClient,
-            products: selectedProducts
+            products_id: selectedProducts
         })
         .then(response => {
             toast.success(response.data.message || 'Sale created successfully.');
@@ -208,25 +210,24 @@ const CreateSales = () => {
                                             </tr>
                                         ) : (
                                             products.map((p, index) => {
+                                                const products_id = p.pid || p.id;
                                                 const isSelected = selectedProducts.some(
-                                                    item => item.product === p.product
+                                                    item => item.products_id === products_id
                                                 );
                                                 const selectedProduct = selectedProducts.find(
-                                                    item => item.product === p.product
+                                                    item => item.products_id === products_id
                                                 );
                                                 return (
-                                                    <tr key={p.id || p.pid || index}>
+                                                    <tr key={products_id || index}>
                                                         <td className="text-nowrap">
-                                                            <input type="checkbox" className="form-check-input" checked={isSelected} onChange={(e) => handleProductCheck(e, p.product)}/>
+                                                            <input type="checkbox" className="form-check-input" checked={isSelected} onChange={(e) => handleProductCheck(e, p)}/>
                                                         </td>
                                                         <td className="text-nowrap">{p.product}</td>
                                                         <td className="text-nowrap">{p.price} €</td>
                                                         <td className="text-nowrap">
                                                             <input type="number" min="1" className="form-control rounded-4 shadow-none text-end" placeholder="QTY" disabled={!isSelected}
                                                                 value={selectedProduct?.qty || ''}
-                                                                onChange={(e) =>
-                                                                    handleQtyChange(p.product, e.target.value)
-                                                                }
+                                                                onChange={(e) => handleQtyChange(p, e.target.value)}
                                                             />
                                                         </td>
                                                     </tr>
