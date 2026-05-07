@@ -19,6 +19,7 @@ import Warehouses from "../pages/management/Warehouses"
 import Maintenances from "../pages/management/Maintenances"
 import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
+import Vacations from "../pages/management/Vacations"
 
 const AppRouter = () => {
   return (
@@ -44,6 +45,7 @@ const AppRouter = () => {
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/vacations" element={<Vacations />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
