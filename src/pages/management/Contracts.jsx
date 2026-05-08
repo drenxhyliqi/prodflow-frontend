@@ -22,7 +22,6 @@ const Contracts = () => {
     const [search, setSearch] = useState('');
     const location = useLocation();
 
-    /* ── FETCH DATA ────────────────────────────────────── */
     const getContracts = (page = 1, searchValue = '') => {
         let url = `/admin/contracts?page=${page}`;
         if (searchValue && searchValue.trim() !== '') {
@@ -51,7 +50,7 @@ const Contracts = () => {
         setSearch(urlSearch);
     }, [location.search]);
 
-    /* ── OPERATIONS ────────────────────────────────────── */
+
     const createContract = (e) => {
         e.preventDefault();
         setSubmitting(true);
