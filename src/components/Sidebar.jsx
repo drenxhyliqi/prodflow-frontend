@@ -101,6 +101,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReportMoney size={18} className='ms-2 me-2'/> Salaries</NavLink>
                     <NavLink to="#" className="sidebar-link d-flex align-items-center"><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
                     <NavLink to="/vacations" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><LuCalendarCog size={18} className='ms-2 me-2'/> Vacations</NavLink>
+                    <NavLink to="/contracts" className="sidebar-link d-flex align-items-center"><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
+                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><LuCalendarCog size={18} className='ms-2 me-2'/> Vocations</NavLink>
                 </div>
             </div>
 

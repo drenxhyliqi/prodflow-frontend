@@ -20,6 +20,7 @@ import Maintenances from "../pages/management/Maintenances"
 import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
 import Vacations from "../pages/management/Vacations"
+import Contracts from "../pages/management/Contracts"
 
 const AppRouter = () => {
   return (
@@ -34,6 +35,7 @@ const AppRouter = () => {
         <Route path="/machines" element={<Machines />} />
         <Route path="/warehouses"element={<Warehouses />} />
         <Route path="/maintenances" element={<Maintenances />} />
+        <Route path="/contracts" element={<Contracts />} />
         <Route path="/production" element={<Production />} />
         <Route path="/planification" element={<Planification />} />
         <Route path="/staff" element={<Staff />} />
