@@ -138,7 +138,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
             <div className="p-2 mb-3 d-md-none d-lg-none">
                 <button id="sidebarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#companiesInSMCollapse" aria-expanded="false" aria-controls="companiesInSMCollapse">
                     <div className="d-flex justify-content-between align-items-center p-2">
-                        <span>Companies</span>
+                        <span>Companies</span>2
                         <span><FaAngleDown /></span>
                     </div>
                 </button>
