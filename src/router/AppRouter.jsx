@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
+import AiChatWidget from "../components/AiChatWidget"
 import Dashboard from "../pages/management/Dashboard"
 import Companies from "../pages/management/Companies"
 import Products from "../pages/management/Products"
@@ -21,6 +22,12 @@ import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
 import Vacations from "../pages/management/Vacations"
 import Contracts from "../pages/management/Contracts"
+
+const PersistentWidgets = () => {
+  const { pathname } = useLocation();
+  if (pathname === "/" || pathname === "/login") return null;
+  return <AiChatWidget />;
+};
 
 const AppRouter = () => {
   return (
@@ -51,6 +58,7 @@ const AppRouter = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
+      <PersistentWidgets />
     </BrowserRouter>
   )
 }
