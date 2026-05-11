@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Layout from '../../layouts/Layout'
 import api from '../../api/axios'
 import { toast } from 'react-toastify';
@@ -12,6 +12,8 @@ const BRAND = '#035dad';
 const inputCls = 'form-control shadow-none rounded-3';
 const btnBrand = { backgroundColor: BRAND, color: '#fff', border: 'none' };
 
+const EMPTY_FORM = { warehouse: '', location: '', capacity: '' };
+
 const Warehouses = () => {
     const [warehouses, setWarehouses] = useState([]);
     const [editWarehouse, setEditWarehouse] = useState(null);
@@ -19,23 +21,36 @@ const Warehouses = () => {
     const [pagination, setPagination] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const [search, setSearch] = useState('');
+    const [newForm, setNewForm] = useState(EMPTY_FORM);
+    const [editForm, setEditForm] = useState(EMPTY_FORM);
     const location = useLocation();
+
+    useEffect(() => {
+        if (editWarehouse) {
+            setEditForm({
+                warehouse: editWarehouse.warehouse || '',
+                location: editWarehouse.location || '',
+                capacity: editWarehouse.capacity ?? '',
+            });
+        }
+    }, [editWarehouse]);
 
     function createWarehouse(e) {
         e.preventDefault();
         setSubmitting(true);
-        const warehouse = document.getElementById('warehouse').value;
-        const locationVal = document.getElementById('location').value;
-        
-        api.post('/admin/create_warehouse', { warehouse, location: locationVal })
+        api.post('/admin/create_warehouse', {
+            warehouse: newForm.warehouse,
+            location: newForm.location,
+            capacity: newForm.capacity !== '' ? Number(newForm.capacity) : null,
+        })
             .then(response => {
                 toast.success(response.data.message);
                 getWarehouses();
-                clearFields();
+                setNewForm(EMPTY_FORM);
                 setSubmitting(false);
             })
             .catch(error => {
-                toast.error(error.response.data.message || 'Failed to create warehouse.');
+                toast.error(error.response?.data?.message || 'Failed to create warehouse.');
                 setSubmitting(false);
             });
     }
@@ -69,19 +84,19 @@ const Warehouses = () => {
         api.get(`/admin/edit_warehouse/${id}`)
             .then(response => setEditWarehouse(response.data))
             .catch(error => {
-                toast.error(error.response.data.message || 'No information found.');
-                setSubmitting(false);
+                toast.error(error.response?.data?.message || 'No information found.');
             });
     }
 
     function updateWarehouse(e) {
         e.preventDefault();
         setSubmitting(true);
-        const wid = document.getElementById('wid').value;
-        const warehouse = document.getElementById('warehouse').value;
-        const locationVal = document.getElementById('location').value;
-
-        api.post('/admin/update_warehouse', { wid, warehouse, location: locationVal })
+        api.post('/admin/update_warehouse', {
+            wid: editWarehouse.wid,
+            warehouse: editForm.warehouse,
+            location: editForm.location,
+            capacity: editForm.capacity !== '' ? Number(editForm.capacity) : null,
+        })
             .then(response => {
                 toast.success(response.data.message);
                 setSubmitting(false);
@@ -89,7 +104,7 @@ const Warehouses = () => {
                 getWarehouses();
             })
             .catch(error => {
-                toast.error(error.response.data.message || 'Failed to update warehouse.');
+                toast.error(error.response?.data?.message || 'Failed to update warehouse.');
                 setSubmitting(false);
             });
     }
@@ -102,14 +117,9 @@ const Warehouses = () => {
                 setDeleteId(null);
             })
             .catch(error => {
-                toast.error(error.response.data.message || 'Failed to delete warehouse.');
+                toast.error(error.response?.data?.message || 'Failed to delete warehouse.');
                 setDeleteId(null);
             });
-    }
-
-    function clearFields() {
-        document.getElementById('warehouse').value = '';
-        document.getElementById('location').value = '';
     }
 
     useEffect(() => {
@@ -138,15 +148,37 @@ const Warehouses = () => {
                 </div>
                 <div className="card-body px-4 pb-4">
                     <form onSubmit={updateWarehouse}>
-                        <input type="hidden" id='wid' value={editWarehouse.wid} />
                         <div className="row g-3">
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-4">
                                 <label className="form-label fw-semibold small">Warehouse Name</label>
-                                <input type="text" defaultValue={editWarehouse.warehouse} className={inputCls} id="warehouse" placeholder="Enter warehouse name" />
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    placeholder="Enter warehouse name"
+                                    value={editForm.warehouse}
+                                    onChange={e => setEditForm(f => ({ ...f, warehouse: e.target.value }))}
+                                />
                             </div>
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-4">
                                 <label className="form-label fw-semibold small">Location</label>
-                                <input type="text" defaultValue={editWarehouse.location} className={inputCls} id="location" placeholder="Enter location" />
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    placeholder="Enter location"
+                                    value={editForm.location}
+                                    onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
+                                />
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Capacity <span className="text-muted fw-normal">(optional)</span></label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className={inputCls}
+                                    placeholder="Enter capacity (units)"
+                                    value={editForm.capacity}
+                                    onChange={e => setEditForm(f => ({ ...f, capacity: e.target.value }))}
+                                />
                             </div>
                             <div className="col-12">
                                 <button
@@ -206,13 +238,36 @@ const Warehouses = () => {
 
                     <form onSubmit={createWarehouse}>
                         <div className="row g-3 pb-2">
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-4">
                                 <label className="form-label fw-semibold small">Warehouse Name</label>
-                                <input type="text" className={inputCls} id="warehouse" placeholder="Enter warehouse name" />
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    placeholder="Enter warehouse name"
+                                    value={newForm.warehouse}
+                                    onChange={e => setNewForm(f => ({ ...f, warehouse: e.target.value }))}
+                                />
                             </div>
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-4">
                                 <label className="form-label fw-semibold small">Location</label>
-                                <input type="text" className={inputCls} id="location" placeholder="Enter location" />
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    placeholder="Enter location"
+                                    value={newForm.location}
+                                    onChange={e => setNewForm(f => ({ ...f, location: e.target.value }))}
+                                />
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Capacity <span className="text-muted fw-normal">(optional)</span></label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className={inputCls}
+                                    placeholder="Enter capacity (units)"
+                                    value={newForm.capacity}
+                                    onChange={e => setNewForm(f => ({ ...f, capacity: e.target.value }))}
+                                />
                             </div>
                             <div className="col-12">
                                 <button
@@ -260,18 +315,24 @@ const Warehouses = () => {
                                     <th className="text-nowrap fw-semibold">#</th>
                                     <th className="text-nowrap fw-semibold">Warehouse</th>
                                     <th className="text-nowrap fw-semibold">Location</th>
+                                    <th className="text-nowrap fw-semibold">Capacity</th>
                                     <th className="text-end text-nowrap fw-semibold">Operations</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {warehouses.length === 0 ? (
-                                    <tr><td colSpan="4" className="text-center text-muted py-4">No data to show...</td></tr>
+                                    <tr><td colSpan="5" className="text-center text-muted py-4">No data to show...</td></tr>
                                 ) : (
                                     warehouses.map(wh => (
                                         <tr key={wh.wid}>
                                             <td className="text-nowrap text-muted small">#{wh.wid}</td>
                                             <td className="text-nowrap fw-semibold">{wh.warehouse}</td>
                                             <td className="text-nowrap text-muted">{wh.location}</td>
+                                            <td className="text-nowrap text-muted">
+                                                {wh.capacity != null && wh.capacity !== ''
+                                                    ? `${Number(wh.capacity).toLocaleString('en-US')} units`
+                                                    : '—'}
+                                            </td>
                                             <td className="text-end text-nowrap">
                                                 <button onClick={() => checkEditWarehouse(wh.wid)} className="btn btn-sm me-1" style={{ color: BRAND, background: BRAND + '12' }}>
                                                     <FaEdit size={15} />

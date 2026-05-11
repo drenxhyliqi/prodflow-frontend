@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { AiOutlineClose } from "react-icons/ai";
+import { TbSparkles } from "react-icons/tb";
 
 const STORAGE_KEY = "ai_chat_messages";
 
@@ -210,69 +212,68 @@ export default function AiChatWidget() {
 
     return (
         <>
+            {/* Mobile backdrop */}
+            {open && <div className="ai-backdrop" onClick={() => setOpen(false)} />}
+
             {/* FAB */}
-            <button
-                onClick={() => setOpen(o => !o)}
-                style={{
-                    position:     "fixed",
-                    bottom:       24,
-                    right:        24,
-                    zIndex:       1000,
-                    background:   "linear-gradient(135deg, #2563EB, #7C3AED)",
-                    color:        "white",
-                    border:       "none",
-                    borderRadius: "50px",
-                    padding:      "14px 22px",
-                    cursor:       "pointer",
-                    fontSize:     "15px",
-                    fontWeight:   "600",
-                    boxShadow:    "0 4px 20px rgba(37,99,235,0.5)",
-                    display:      "flex",
-                    alignItems:   "center",
-                    gap:          "8px",
-                }}
-            >
-                {open ? "Close" : "Ask AI"}
-                {!open && unread > 0 && (
-                    <span style={{
-                        position:       "absolute",
-                        top:            "-6px",
-                        right:          "-6px",
-                        background:     "#EF4444",
-                        color:          "white",
-                        borderRadius:   "50%",
-                        width:          "20px",
-                        height:         "20px",
-                        fontSize:       "11px",
-                        display:        "flex",
-                        alignItems:     "center",
-                        justifyContent: "center",
-                        fontWeight:     700,
-                    }}>{unread > 9 ? "9+" : unread}</span>
+            <div className="ai-fab">
+                {!open && (
+                    <div style={{
+                        position:     "absolute",
+                        inset:        "-10px",
+                        borderRadius: "50%",
+                        background:   "#2662D9",
+                        animation:    "ai-pulse 1.8s ease-in-out infinite",
+                        pointerEvents:"none",
+                    }} />
                 )}
-            </button>
+                <button
+                    onClick={() => setOpen(o => !o)}
+                    style={{
+                        position:        "relative",
+                        background:      "#2662D9",
+                        color:           "white",
+                        border:          "none",
+                        borderRadius:    "50%",
+                        width:           "52px",
+                        height:          "52px",
+                        padding:         0,
+                        cursor:          "pointer",
+                        boxShadow:       "0 4px 16px rgba(38,98,217,0.4)",
+                        display:         "flex",
+                        alignItems:      "center",
+                        justifyContent:  "center",
+                    }}
+                >
+                    {open ? <AiOutlineClose size={20} /> : <TbSparkles size={22} />}
+                    {!open && unread > 0 && (
+                        <span style={{
+                            position:       "absolute",
+                            top:            "-6px",
+                            right:          "-6px",
+                            background:     "#EF4444",
+                            color:          "white",
+                            borderRadius:   "50%",
+                            width:          "20px",
+                            height:         "20px",
+                            fontSize:       "11px",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                            fontWeight:     700,
+                        }}>{unread > 9 ? "9+" : unread}</span>
+                    )}
+                </button>
+            </div>
 
             {/* Chat panel */}
             {open && (
-                <div style={{
-                    position:      "fixed",
-                    bottom:        80,
-                    right:         24,
-                    width:         "380px",
-                    height:        "560px",
-                    zIndex:        999,
-                    background:    "white",
-                    borderRadius:  "16px",
-                    boxShadow:     "0 8px 40px rgba(0,0,0,0.15)",
-                    display:       "flex",
-                    flexDirection: "column",
-                    overflow:      "hidden",
-                }}>
+                <div className="ai-panel">
 
                     {/* Header */}
                     <div style={{
                         padding:        "16px 20px",
-                        background:     "linear-gradient(135deg, #2563EB, #7C3AED)",
+                        background:     "#275bc3",
                         display:        "flex",
                         justifyContent: "space-between",
                         alignItems:     "center",
@@ -283,7 +284,7 @@ export default function AiChatWidget() {
                                 <span style={{ width:"8px", height:"8px", background:"#22C55E", borderRadius:"50%", display:"inline-block" }}/>
                                 Prodflow Assistant
                             </div>
-                            <div style={{ fontSize:"11px", opacity:0.8, marginTop:"2px" }}>Powered by GPT-4o mini</div>
+                            {/* <div style={{ fontSize:"11px", opacity:0.8, marginTop:"2px" }}>Powered by GPT-4o mini</div> */}
                         </div>
                         <div style={{ display:"flex", gap:"6px", alignItems:"center" }}>
                             {alerts.length > 0 && (
@@ -303,8 +304,8 @@ export default function AiChatWidget() {
                             >Clear</button>
                             <button
                                 onClick={() => setOpen(false)}
-                                style={{ background:"rgba(255,255,255,0.2)", border:"none", color:"white", cursor:"pointer", fontSize:"16px", borderRadius:"50%", width:"28px", height:"28px" }}
-                            >x</button>
+                                style={{ background:"rgba(255,255,255,0.1)", border:"none", color:"white", cursor:"pointer", borderRadius:"50%", width:"28px", height:"28px", display:"flex", alignItems:"center", justifyContent:"center" }}
+                            ><AiOutlineClose size={16} /></button>
                         </div>
                     </div>
 
@@ -316,7 +317,7 @@ export default function AiChatWidget() {
                                 return (
                                     <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", padding:"7px 12px", ...s, borderBottom: i < alerts.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none" }}>
                                         <span style={{ flex:1, fontSize:"12px", lineHeight:1.4 }}>{a.message}</span>
-                                        <button onClick={() => dismissAlert(a.message)} style={{ flexShrink:0, background:"none", border:"none", cursor:"pointer", fontSize:"12px", color:"inherit", opacity:0.5, padding:"0 0 0 6px", lineHeight:1 }}>x</button>
+                                        <button onClick={() => dismissAlert(a.message)} style={{ flexShrink:0, background:"none", border:"none", cursor:"pointer", color:"inherit", opacity:0.5, padding:"0 0 0 6px", display:"flex", alignItems:"center" }}><AiOutlineClose size={13} /></button>
                                     </div>
                                 );
                             })}
@@ -337,7 +338,7 @@ export default function AiChatWidget() {
 
                         {messages.map((m, i) => {
                             if (m.role === "system-notice") return (
-                                <div key={i} style={{ textAlign:"center", fontSize:"11px", color:"#7C3AED", background:"#F3F0FF", border:"1px solid #DDD6FE", borderRadius:"8px", padding:"6px 12px", margin:"4px 0" }}>
+                                <div key={i} style={{ textAlign:"center", fontSize:"11px", color:"#2662D9", background:"#EFF4FF", border:"1px solid #BFCFFA", borderRadius:"8px", padding:"6px 12px", margin:"4px 0" }}>
                                     {m.content}
                                 </div>
                             );
@@ -354,7 +355,7 @@ export default function AiChatWidget() {
                                             borderRadius: isUser ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
                                             fontSize:     "13px",
                                             lineHeight:   1.6,
-                                            background:   isUser ? "linear-gradient(135deg, #2563EB, #7C3AED)" : isError ? "#FEE2E2" : "white",
+                                            background:   isUser ? "#2662D9" : isError ? "#FEE2E2" : "white",
                                             color:        isUser ? "white" : isError ? "#DC2626" : "#1E293B",
                                             boxShadow:    "0 1px 4px rgba(0,0,0,0.08)",
                                         }}>
@@ -453,7 +454,7 @@ export default function AiChatWidget() {
                         {loading ? (
                             <button onClick={abort} style={{ background:"#FEE2E2", color:"#DC2626", border:"none", borderRadius:"10px", padding:"10px 14px", cursor:"pointer", fontSize:"13px", fontWeight:600, whiteSpace:"nowrap" }}>Stop</button>
                         ) : (
-                            <button onClick={() => send()} style={{ background:"linear-gradient(135deg, #2563EB, #7C3AED)", color:"white", border:"none", borderRadius:"10px", padding:"10px 16px", cursor:"pointer", fontSize:"16px" }}>-&gt;</button>
+                            <button onClick={() => send()} style={{ background:"#2662D9", color:"white", border:"none", borderRadius:"10px", padding:"10px 16px", cursor:"pointer", fontSize:"16px" }}>-&gt;</button>
                         )}
                     </div>
                 </div>
@@ -464,10 +465,78 @@ export default function AiChatWidget() {
                     0%, 100% { transform: translateY(0); }
                     50%       { transform: translateY(-5px); }
                 }
+                @keyframes ai-pulse {
+                    0%   { transform: scale(1);    opacity: 0.5; }
+                    50%  { transform: scale(1.55); opacity: 0.12; }
+                    100% { transform: scale(1);    opacity: 0.5; }
+                }
+
+                /* FAB */
+                .ai-fab {
+                    position: fixed;
+                    bottom: 24px;
+                    right: 24px;
+                    z-index: 1000;
+                }
+
+                /* Panel */
+                .ai-panel {
+                    position:       fixed;
+                    bottom:         80px;
+                    right:          24px;
+                    width:          380px;
+                    height:         560px;
+                    z-index:        999;
+                    background:     white;
+                    border-radius:  16px;
+                    box-shadow:     0 8px 40px rgba(0,0,0,0.15);
+                    display:        flex;
+                    flex-direction: column;
+                    overflow:       hidden;
+                }
+
+                /* Backdrop (mobile only) */
+                .ai-backdrop {
+                    display: none;
+                }
+
+                /* Scrollbar */
                 .ai-chips-bar::-webkit-scrollbar { display: none; }
                 .ai-chips-bar { -ms-overflow-style: none; scrollbar-width: none; }
                 .ai-copy-btn  { opacity: 0; transition: opacity 0.15s; }
                 .ai-msg-outer:hover .ai-copy-btn { opacity: 1; }
+
+                /* ── Mobile ── */
+                @media (max-width: 640px) {
+                    .ai-fab {
+                        bottom: 16px;
+                        right:  16px;
+                    }
+                    .ai-panel {
+                        bottom:        0;
+                        right:         0;
+                        left:          0;
+                        width:         100%;
+                        height:        88dvh;
+                        border-radius: 20px 20px 0 0;
+                    }
+                    .ai-backdrop {
+                        display:    block;
+                        position:   fixed;
+                        inset:      0;
+                        background: rgba(0,0,0,0.4);
+                        z-index:    998;
+                    }
+                    .ai-copy-btn { opacity: 1 !important; }
+                }
+
+                /* ── Tablet ── */
+                @media (min-width: 641px) and (max-width: 1024px) {
+                    .ai-panel {
+                        width:  340px;
+                        height: 520px;
+                    }
+                }
             `}</style>
         </>
     );
