@@ -82,15 +82,44 @@ const SalesInvoice = () => {
                                                     <td className='text-nowrap'>{item.unit}</td>
                                                     <td className='text-nowrap'>{item.qty}</td>
                                                     <td className='text-nowrap text-end'>{item.price}€</td>
-                                                    <td className='text-nowrap text-end'>{item.total}€</td>
+                                                    <td className='text-nowrap text-end'>{(item.price * item.qty).toFixed(2)}€</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                         <tfoot>
-                                            <tr>
-                                                <td colSpan="4" className="text-end fw-bold">Grand Total:</td>
-                                                <td className="fw-bold text-end">{informations.reduce((sum, item) => sum + Number(item.total), 0).toFixed(2)}€</td>
-                                            </tr>
+                                            {(() => {
+                                                const grandTotal = informations.reduce(
+                                                    (sum, item) => sum + Number(item.price * item.qty),
+                                                    0
+                                                );
+                                                const offerTotal = informations.reduce(
+                                                    (sum, item) => sum + Number(item.total),
+                                                    0
+                                                );
+                                                const isSame = grandTotal.toFixed(2) === offerTotal.toFixed(2);
+                                                return (
+                                                    <>
+                                                        <tr>
+                                                            <td colSpan="4" className="text-end fw-bold">
+                                                                {isSame ? 'Grand Total:' : 'Subtotal:'}
+                                                            </td>
+                                                            <td className="fw-bold text-end">
+                                                                {grandTotal.toFixed(2)}€
+                                                            </td>
+                                                        </tr>
+                                                        {!isSame && (
+                                                            <tr>
+                                                                <td colSpan="4" className="text-end fw-bold">
+                                                                    Offer:
+                                                                </td>
+                                                                <td className="fw-bold text-end">
+                                                                    {offerTotal.toFixed(2)}€
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </>
+                                                );
+                                            })()}
                                         </tfoot>
                                     </table>
                                 </div>

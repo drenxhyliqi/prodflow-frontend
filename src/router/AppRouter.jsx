@@ -19,6 +19,7 @@ import Warehouses from "../pages/management/Warehouses"
 import Maintenances from "../pages/management/Maintenances"
 import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
+import EditSales from "../pages/management/EditSales"
 
 const AppRouter = () => {
   return (
@@ -39,8 +40,9 @@ const AppRouter = () => {
         <Route path="/users" element={<Users />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/sales" element={<Sales />} />
-        <Route path="/invoice/:sale_number" element={<SalesInvoice />} />
-        <Route path="/create-sales" element={<CreateSales />} />
+        <Route path="/salesInvoice/:sale_number" element={<SalesInvoice />} />
+        <Route path="/editSale/:sale_number" element={<EditSales />} />
+        <Route path="/createSale" element={<CreateSales />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
