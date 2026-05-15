@@ -20,6 +20,7 @@ import Maintenances from "../pages/management/Maintenances"
 import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
 import EditSales from "../pages/management/EditSales"
+import ProductsStock from "../pages/management/ProductsStock"
 
 const AppRouter = () => {
   return (
@@ -30,6 +31,7 @@ const AppRouter = () => {
         <Route path="/companies" element={<Companies />} />
         <Route path="/products" element={<Products />} />
         <Route path="/materials" element={<Materials />} />
+        <Route path="/products_stock" element={<ProductsStock />} />
         <Route path="/materials_stock" element={<MaterialsStock />} />
         <Route path="/machines" element={<Machines />} />
         <Route path="/warehouses"element={<Warehouses />} />
