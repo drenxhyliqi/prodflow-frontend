@@ -22,6 +22,7 @@ import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
 import Vacations from "../pages/management/Vacations"
 import Contracts from "../pages/management/Contracts"
+import Salaries from "../pages/management/Salaries"
 
 const PersistentWidgets = () => {
   const { pathname } = useLocation();
@@ -56,6 +57,7 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/vacations" element={<Vacations />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/salaries" element={<Salaries />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       <PersistentWidgets />
