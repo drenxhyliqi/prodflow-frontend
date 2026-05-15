@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react'
 import Layout from '../../layouts/Layout'
 import api from '../../api/axios'
 import { toast } from 'react-toastify'
-import { MdOutlineAddBox } from 'react-icons/md'
+import { MdOutlineAddBox, MdDeleteOutline } from 'react-icons/md'
 import Paginate from '../../components/Paginate'
 import { FaSearch, FaEdit } from 'react-icons/fa'
 import { useLocation } from 'react-router-dom'
 import { IoIosArrowBack } from 'react-icons/io'
-import { MdDeleteOutline } from 'react-icons/md'
+
+const BRAND = '#035dad'
+const inputCls = 'form-control shadow-none rounded-3'
+const btnBrand = { backgroundColor: BRAND, color: '#fff', border: 'none' }
 
 const Staff = () => {
     const [rows, setRows] = useState([])
@@ -131,237 +134,214 @@ const Staff = () => {
         getStaff(page, urlSearch)
     }, [location.search])
 
+    /* ── EDIT MODE ─────────────────────────────────────── */
+    if (editRow) return (
+        <Layout>
+            <button
+                onClick={() => setEditRow(null)}
+                className='btn btn-transparent border-0 p-0 d-flex align-items-center fw-semibold'
+            >
+                <IoIosArrowBack className='me-2' />Turn back
+            </button>
+
+            <div className="card rounded-4 mt-3 border-0 shadow-sm">
+                <div className="card-header rounded-top-4 border-0 py-3 px-4" style={{ background: BRAND + '10' }}>
+                    <span className='fw-semibold' style={{ color: BRAND }}>
+                        Update Staff <strong>#ID:{editRow.sid}</strong>
+                    </span>
+                </div>
+                <div className="card-body px-4 pb-4">
+                    <form onSubmit={updateStaff}>
+                        <input type="hidden" id="sid" value={editRow.sid} />
+                        <div className="row g-3">
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Name</label>
+                                <input type="text" defaultValue={editRow.name} className={inputCls} id="name" placeholder="Enter name" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Surname</label>
+                                <input type="text" defaultValue={editRow.surname} className={inputCls} id="surname" placeholder="Enter surname" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Position</label>
+                                <input type="text" defaultValue={editRow.position} className={inputCls} id="position" placeholder="Enter position" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Contact</label>
+                                <input type="text" defaultValue={editRow.contact || ''} className={inputCls} id="contact" placeholder="Enter contact" />
+                            </div>
+                            <div className="col-12 col-md-4 d-flex align-items-end">
+                                <button
+                                    type={submitting ? 'button' : 'submit'}
+                                    disabled={submitting}
+                                    className="btn w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                                    style={btnBrand}
+                                >
+                                    <FaEdit /> {submitting ? 'Updating...' : 'Update Staff'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Layout>
+    )
+
+    /* ── MAIN VIEW ─────────────────────────────────────── */
     return (
         <Layout>
-            {!editRow && (
-                <>
-                    <h4 className="fw-bold">Staff</h4>
-                    <small className="d-inline-block opacity-75">Manage staff</small>
-                </>
-            )}
-
-            {editRow && (
+            {/* Header */}
+            <div
+                className="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-4 mb-4"
+                style={{ background: BRAND + '1a' }}
+            >
+                <div>
+                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: BRAND }}>Human Resources</p>
+                    <h4 className='fw-bold mb-1'>Staff Overview</h4>
+                    <small className='text-muted'>Manage and track all staff members across your company.</small>
+                </div>
                 <button
-                    type="button"
-                    onClick={() => setEditRow(null)}
-                    className="btn btn-transparent border-0 p-0 d-flex align-items-center fw-semibold"
+                    className="btn rounded-pill d-flex align-items-center gap-2 fw-semibold px-4 py-2"
+                    style={btnBrand}
+                    onClick={() => document.getElementById('create-form')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                    <IoIosArrowBack className="me-2" />
-                    Turn back
+                    <MdOutlineAddBox size={18} /> New Staff
                 </button>
-            )}
+            </div>
 
-            {editRow && (
-                <div className="card rounded-4 mt-3">
-                    <div className="card-header rounded-4">
-                        <span className="fw-semibold">
-                            Update Staff <strong>#ID:{editRow.sid}</strong>
-                        </span>
+            {/* Create Form */}
+            <div id="create-form" className="card rounded-4 border-0 shadow-sm mb-4">
+                <div className="card-body px-4 pt-4 pb-3">
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                        <div style={{
+                            width: 36, height: 36, borderRadius: 10,
+                            background: BRAND + '18', color: BRAND,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
+                        }}>
+                            <MdOutlineAddBox />
+                        </div>
+                        <div>
+                            <p className="fw-semibold mb-0">Register new Staff</p>
+                            <small className="text-muted">Fill in the details to add a new staff member</small>
+                        </div>
                     </div>
-                    <div className="card-body">
-                        <form method="post" onSubmit={updateStaff}>
-                            <input type="hidden" id="sid" name="sid" value={editRow.sid} required />
-                            <div className="row g-3">
-                                <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="name" className="form-label">Name</label>
-                                    <input
-                                        type="text"
-                                        defaultValue={editRow.name}
-                                        className="form-control rounded-4 shadow-none"
-                                        id="name"
-                                        required
-                                    />
-                                </div>
-                                <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="surname" className="form-label">Surname</label>
-                                    <input
-                                        type="text"
-                                        defaultValue={editRow.surname}
-                                        className="form-control rounded-4 shadow-none"
-                                        id="surname"
-                                        required
-                                    />
-                                </div>
-                                <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="position" className="form-label">Position</label>
-                                    <input
-                                        type="text"
-                                        defaultValue={editRow.position}
-                                        className="form-control rounded-4 shadow-none"
-                                        id="position"
-                                        required
-                                    />
-                                </div>
-                                <div className="col-12 col-md-6 col-lg-4">
-                                    <label htmlFor="contact" className="form-label">Contact</label>
-                                    <input
-                                        type="text"
-                                        defaultValue={editRow.contact || ''}
-                                        className="form-control rounded-4 shadow-none"
-                                        id="contact"
-                                    />
-                                </div>
-                                <div className="col-12">
-                                    {submitting ? (
-                                        <button type="button" className="btn btn-success rounded-4" disabled>
-                                            Updating...
-                                        </button>
-                                    ) : (
-                                        <button type="submit" className="btn btn-success rounded-4 d-flex align-items-center gap-1">
-                                            <FaEdit /> Update Staff
-                                        </button>
-                                    )}
-                                </div>
+
+                    <form onSubmit={createStaff}>
+                        <div className="row g-3 pb-2">
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Name</label>
+                                <input type="text" className={inputCls} id="name" placeholder="Enter name" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Surname</label>
+                                <input type="text" className={inputCls} id="surname" placeholder="Enter surname" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Position</label>
+                                <input type="text" className={inputCls} id="position" placeholder="Enter position" required />
+                            </div>
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <label className="form-label fw-semibold small">Contact</label>
+                                <input type="text" className={inputCls} id="contact" placeholder="Enter contact" />
+                            </div>
+                            <div className="col-12 col-md-4 d-flex align-items-end">
+                                <button
+                                    type={submitting ? 'button' : 'submit'}
+                                    disabled={submitting}
+                                    className="btn w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                                    style={btnBrand}
+                                >
+                                    <MdOutlineAddBox size={18} />
+                                    {submitting ? 'Creating...' : 'Create Staff'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* List */}
+            <div className="card rounded-4 border-0 shadow-sm mb-4">
+                <div className="card-body px-4 pt-4">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <p className="fw-semibold mb-0">Staff List</p>
+                            <small className="text-muted">{pagination.total || 0} entries</small>
+                        </div>
+                        <form onSubmit={handleSearch} style={{ minWidth: 220 }}>
+                            <div className="input-group">
+                                <span className="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <FaSearch className="text-muted" size={13} />
+                                </span>
+                                <input
+                                    type="search" name="search" defaultValue={search}
+                                    className="form-control border-start-0 shadow-none rounded-end-3"
+                                    placeholder="Search staff..."
+                                    style={{ fontSize: '0.875rem' }}
+                                />
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
 
-            {!editRow && (
-                <>
-                    <div className="card rounded-4 mt-3">
-                        <div className="card-header rounded-4">
-                            <span className="fw-semibold">Register new Staff</span>
-                        </div>
-                        <div className="card-body">
-                            <form method="post" onSubmit={createStaff}>
-                                <div className="row g-3">
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="name" className="form-label">Name</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="name" required />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="surname" className="form-label">Surname</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="surname" required />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="position" className="form-label">Position</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="position" required />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="contact" className="form-label">Contact</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="contact" />
-                                    </div>
-                                    <div className="col-12">
-                                        {submitting ? (
-                                            <button type="button" className="btn btn-success rounded-4" disabled>
-                                                Creating...
-                                            </button>
-                                        ) : (
-                                            <button type="submit" className="btn btn-success rounded-4 d-flex align-items-center gap-1">
-                                                <MdOutlineAddBox /> Create Staff
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div className="card rounded-4 my-4">
-                        <div className="card-header rounded-4">
-                            <span className="fw-semibold">Staff List</span>
-                        </div>
-                        <div className="card-body">
-                            <div className="mb-3">
-                                <form onSubmit={handleSearch}>
-                                    <div className="input-group mb-3">
-                                        <input
-                                            type="search"
-                                            name="search"
-                                            defaultValue={search}
-                                            className="form-control rounded-start-4 shadow-none"
-                                            placeholder="Search..."
-                                        />
-                                        <button className="btn btn-primary rounded-end-4" type="submit">
-                                            <FaSearch />
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div className="table-responsive">
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th className="text-nowrap" scope="col">#</th>
-                                            <th className="text-nowrap" scope="col">Name</th>
-                                            <th className="text-nowrap" scope="col">Surname</th>
-                                            <th className="text-nowrap" scope="col">Position</th>
-                                            <th className="text-nowrap" scope="col">Contact</th>
-                                            <th className="text-end text-nowrap" scope="col">Operations</th>
+                    <div className="table-responsive">
+                        <table className="table table-hover align-middle">
+                            <thead>
+                                <tr className="text-uppercase" style={{ fontSize: '0.7rem', letterSpacing: '0.06em', color: '#6b7280' }}>
+                                    <th className="text-nowrap fw-semibold">#</th>
+                                    <th className="text-nowrap fw-semibold">Name</th>
+                                    <th className="text-nowrap fw-semibold">Surname</th>
+                                    <th className="text-nowrap fw-semibold">Position</th>
+                                    <th className="text-nowrap fw-semibold">Contact</th>
+                                    <th className="text-end text-nowrap fw-semibold">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.length === 0 ? (
+                                    <tr><td colSpan="6" className="text-center text-muted py-4">No data to show...</td></tr>
+                                ) : (
+                                    rows.map((row) => (
+                                        <tr key={row.sid}>
+                                            <td className="text-nowrap text-muted small">#{row.sid}</td>
+                                            <td className="text-nowrap fw-semibold">{row.name}</td>
+                                            <td className="text-nowrap">{row.surname}</td>
+                                            <td className="text-nowrap text-muted">{row.position}</td>
+                                            <td className="text-nowrap text-muted">{row.contact || '—'}</td>
+                                            <td className="text-end text-nowrap">
+                                                <button onClick={() => checkEditStaff(row.sid)} className="btn btn-sm me-1" style={{ color: BRAND, background: BRAND + '12' }}>
+                                                    <FaEdit size={15} />
+                                                </button>
+                                                <button onClick={() => setDeleteId(row.sid)} className="btn btn-sm" style={{ color: '#ef4444', background: '#ef444412' }}>
+                                                    <MdDeleteOutline size={18} />
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {rows.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="6" className="text-center">
-                                                    No data to show...
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            rows.map((row) => (
-                                                <tr key={row.sid}>
-                                                    <td className="text-nowrap">{row.sid}</td>
-                                                    <td className="text-nowrap">{row.name}</td>
-                                                    <td className="text-nowrap">{row.surname}</td>
-                                                    <td className="text-nowrap">{row.position}</td>
-                                                    <td className="text-nowrap">{row.contact || '—'}</td>
-                                                    <td className="text-end text-nowrap">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => checkEditStaff(row.sid)}
-                                                            className="btn btn-success btn-sm shadow-sm me-2"
-                                                        >
-                                                            <FaEdit size={20} />
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setDeleteId(row.sid)}
-                                                            className="btn btn-danger btn-sm shadow-sm"
-                                                        >
-                                                            <MdDeleteOutline size={20} />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <Paginate data={pagination} />
-                        </div>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
 
-                    {deleteId && (
-                        <div
-                            className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3"
-                            style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}
-                        >
-                            <div className="bg-white shadow-lg rounded-4 p-3 border">
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Confirm deletion</strong>
-                                        <p className="mb-0 small text-muted">
-                                            Delete staff member <strong>#ID: {deleteId}</strong>?
-                                        </p>
-                                    </div>
-                                    <button type="button" className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)} />
-                                </div>
-                                <div className="d-flex justify-content-end mt-3">
-                                    <button type="button" className="btn btn-light me-2" onClick={() => setDeleteId(null)}>
-                                        Cancel
-                                    </button>
-                                    <button type="button" className="btn btn-danger" onClick={handleDelete}>
-                                        Confirm
-                                    </button>
-                                </div>
+                    <Paginate data={pagination} />
+                </div>
+            </div>
+
+            {/* Delete confirmation */}
+            {deleteId && (
+                <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3" style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}>
+                    <div className="bg-white shadow-lg rounded-4 p-3 border">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Confirm deletion</strong>
+                                <p className="mb-0 small text-muted">Are you sure you want to delete staff member <strong>#ID: {deleteId}</strong>?</p>
                             </div>
+                            <button className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)} />
                         </div>
-                    )}
-                </>
+                        <div className="d-flex justify-content-end mt-3 gap-2">
+                            <button className="btn btn-light rounded-3" onClick={() => setDeleteId(null)}>Cancel</button>
+                            <button className="btn btn-danger rounded-3" onClick={handleDelete}>Confirm</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </Layout>
     )
