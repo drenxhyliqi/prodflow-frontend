@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
+import AiChatWidget from "../components/AiChatWidget"
 import Dashboard from "../pages/management/Dashboard"
 import Companies from "../pages/management/Companies"
 import Products from "../pages/management/Products"
@@ -21,6 +22,15 @@ import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
 import EditSales from "../pages/management/EditSales"
 import ProductsStock from "../pages/management/ProductsStock"
+import Vacations from "../pages/management/Vacations"
+import Contracts from "../pages/management/Contracts"
+import Salaries from "../pages/management/Salaries"
+
+const PersistentWidgets = () => {
+  const { pathname } = useLocation();
+  if (pathname === "/" || pathname === "/login") return null;
+  return <AiChatWidget />;
+};
 
 const AppRouter = () => {
   return (
@@ -36,6 +46,7 @@ const AppRouter = () => {
         <Route path="/machines" element={<Machines />} />
         <Route path="/warehouses"element={<Warehouses />} />
         <Route path="/maintenances" element={<Maintenances />} />
+        <Route path="/contracts" element={<Contracts />} />
         <Route path="/production" element={<Production />} />
         <Route path="/planification" element={<Planification />} />
         <Route path="/staff" element={<Staff />} />
@@ -48,9 +59,12 @@ const AppRouter = () => {
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/vacations" element={<Vacations />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/salaries" element={<Salaries />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
+      <PersistentWidgets />
     </BrowserRouter>
   )
 }

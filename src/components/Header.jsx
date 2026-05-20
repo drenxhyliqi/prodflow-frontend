@@ -52,6 +52,7 @@ const Header = ({ menuVisible, setMenuVisible }) => {
         api.get(url)
             .then(response => {
                 setActiveC(response.data);
+                localStorage.setItem('active_company_id', response.data);
             })
             .catch(() => {
                 toast.error('Failed to fetch active company.');
@@ -61,8 +62,14 @@ const Header = ({ menuVisible, setMenuVisible }) => {
     // Activate Company
     function setActiveCompany(id) {
         api.post(`/admin/set_active_company/${id}`)
-            .then(response => {
-                getActiveCompany();
+            .then(() => {
+                const company = allCompanies.find(c => c.cid === id);
+                setActiveC(id);
+                localStorage.setItem('active_company_id', id);
+                localStorage.setItem('active_company_name', company?.name || '');
+                window.dispatchEvent(new CustomEvent('company-changed', {
+                    detail: { companyId: id, companyName: company?.name || '' }
+                }));
                 navigate('/dashboard');
             })
             .catch(() => {

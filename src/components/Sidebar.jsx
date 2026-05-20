@@ -99,8 +99,9 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     <NavLink to="/staff" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbUsers size={18} className='ms-2 me-2'/> Staff</NavLink>
                     <NavLink to="/users" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbUserScan size={18} className='ms-2 me-2'/> Users</NavLink>
                     <NavLink to="/salaries" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReportMoney size={18} className='ms-2 me-2'/> Salaries</NavLink>
+                    <NavLink to="/vacations" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><LuCalendarCog size={18} className='ms-2 me-2'/> Vacations</NavLink>
                     <NavLink to="/contracts" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
-                    <NavLink to="/vocations" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><LuCalendarCog size={18} className='ms-2 me-2'/> Vocations</NavLink>
+                    {/* <NavLink to="/vacations" className="sidebar-link d-flex align-items-center"><LuCalendarCog size={18} className='ms-2 me-2'/> Vacations</NavLink> */}
                 </div>
             </div>
 
@@ -126,9 +127,9 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="reportsCollapse">
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
+                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
+                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
+                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
                 </div>
             </div>
 
@@ -136,14 +137,14 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
             <div className="p-2 mb-3 d-md-none d-lg-none">
                 <button id="sidebarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#companiesInSMCollapse" aria-expanded="false" aria-controls="companiesInSMCollapse">
                     <div className="d-flex justify-content-between align-items-center p-2">
-                        <span>Companies</span>
+                        <span>Companies</span>2
                         <span><FaAngleDown /></span>
                     </div>
                 </button>
                 <div className="collapse show" id="companiesInSMCollapse">
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Alpha Fabric</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Beta Fabric</NavLink>
-                    <NavLink to="#" className="sidebar-link d-flex align-items-center"><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Gamma Fabric</NavLink>
+                    <NavLink to="#" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Alpha Fabric</NavLink>
+                    <NavLink to="#" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Beta Fabric</NavLink>
+                    <NavLink to="#" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><HiBuildingOffice2 size={18} className='ms-2 me-2'/> Gamma Fabric</NavLink>
                 </div>
             </div>
         </aside>
