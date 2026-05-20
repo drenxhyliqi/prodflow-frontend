@@ -75,7 +75,7 @@ const Sales = () => {
                     </small>
                 </div>
                 <div className="col-4 col-md-3 col-lg-6 text-end">
-                    <Link to='/create-sales' className='btn btn-primary rounded-4 d-inline-flex align-items-center'><MdOutlineAddBox className='me-1' size={20}/> Create Sale</Link>
+                    <Link to='/createSale' className='btn btn-primary rounded-4 d-inline-flex align-items-center'><MdOutlineAddBox className='me-1' size={20}/> Create Sale</Link>
                 </div>
             </div>
 
@@ -125,8 +125,8 @@ const Sales = () => {
                                                 : '-'}
                                             </td>
                                             <td className="text-end text-nowrap">
-                                                <Link to={`/invoice/${sale.sale_number}`} className="btn btn-primary btn-sm shadow-sm me-2"><LiaFileInvoiceDollarSolid size={20} /></Link>
-                                                <button onClick={() => checkEditCompany(company.cid)} className="btn btn-success btn-sm shadow-sm me-2"><FaEdit size={20} /></button>
+                                                <Link to={`/salesInvoice/${sale.sale_number}`} className="btn btn-primary btn-sm shadow-sm me-2"><LiaFileInvoiceDollarSolid size={20} /></Link>
+                                                <Link to={`/editSale/${sale.sale_number}`}  className="btn btn-success btn-sm shadow-sm me-2"><FaEdit size={20} /></Link>
                                                 <button type="button" onClick={() => setDeleteId(sale.sale_number)} className="btn btn-danger btn-sm shadow-sm"><MdDeleteOutline size={20} /></button>
                                             </td>
                                         </tr>

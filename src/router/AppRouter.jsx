@@ -20,6 +20,8 @@ import Warehouses from "../pages/management/Warehouses"
 import Maintenances from "../pages/management/Maintenances"
 import CreateSales from "../pages/management/CreateSales"
 import SalesInvoice from "../pages/management/SalesInvoice"
+import EditSales from "../pages/management/EditSales"
+import ProductsStock from "../pages/management/ProductsStock"
 import Vacations from "../pages/management/Vacations"
 import Contracts from "../pages/management/Contracts"
 import Salaries from "../pages/management/Salaries"
@@ -39,6 +41,7 @@ const AppRouter = () => {
         <Route path="/companies" element={<Companies />} />
         <Route path="/products" element={<Products />} />
         <Route path="/materials" element={<Materials />} />
+        <Route path="/products_stock" element={<ProductsStock />} />
         <Route path="/materials_stock" element={<MaterialsStock />} />
         <Route path="/machines" element={<Machines />} />
         <Route path="/warehouses"element={<Warehouses />} />
@@ -50,8 +53,9 @@ const AppRouter = () => {
         <Route path="/users" element={<Users />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/sales" element={<Sales />} />
-        <Route path="/invoice/:sale_number" element={<SalesInvoice />} />
-        <Route path="/create-sales" element={<CreateSales />} />
+        <Route path="/salesInvoice/:sale_number" element={<SalesInvoice />} />
+        <Route path="/editSale/:sale_number" element={<EditSales />} />
+        <Route path="/createSale" element={<CreateSales />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />

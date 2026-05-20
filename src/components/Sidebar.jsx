@@ -66,7 +66,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="stockCollapse">
-                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaRegChartBar size={18} className='ms-2 me-2'/> Products Stock</NavLink>
+                    <NavLink to="/products_stock" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaRegChartBar size={18} className='ms-2 me-2'/> Products Stock</NavLink>
                     <NavLink to="/materials_stock" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaRegChartBar  size={18} className='ms-2 me-2'/> Materials Stock</NavLink>
                     <NavLink to="/warehouses" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaWarehouse size={18} className='ms-2 me-2'/> Warehouses</NavLink>               </div>
             </div>
