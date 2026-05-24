@@ -129,7 +129,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                 <div className="collapse show" id="reportsCollapse">
                     <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
                     <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
-                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
+                    <NavLink to="/expensesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
+                    
                 </div>
             </div>
 
