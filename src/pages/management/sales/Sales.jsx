@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../../layouts/Layout';
-import api from '../../api/axios';
+import Layout from '../../../layouts/Layout';
+import api from '../../../api/axios';
 import { toast } from 'react-toastify';
 import { MdOutlineAddBox, MdDeleteOutline } from 'react-icons/md';
-import Paginate from '../../components/Paginate';
+import Paginate from '../../../components/Paginate';
 import { FaSearch, FaEdit } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';

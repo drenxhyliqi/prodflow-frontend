@@ -101,7 +101,6 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     <NavLink to="/salaries" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReportMoney size={18} className='ms-2 me-2'/> Salaries</NavLink>
                     <NavLink to="/vacations" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><LuCalendarCog size={18} className='ms-2 me-2'/> Vacations</NavLink>
                     <NavLink to="/contracts" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><GrNotes size={18} className='ms-2 me-2'/> Contracts</NavLink>
-                    {/* <NavLink to="/vacations" className="sidebar-link d-flex align-items-center"><LuCalendarCog size={18} className='ms-2 me-2'/> Vacations</NavLink> */}
                 </div>
             </div>
 
@@ -127,8 +126,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                     </div>
                 </button>
                 <div className="collapse show" id="reportsCollapse">
-                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
-                    <NavLink to="/404" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
+                    <NavLink to="/productionReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
+                    <NavLink to="/salesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
                     <NavLink to="/expensesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
                     
                 </div>
@@ -138,7 +137,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
             <div className="p-2 mb-3 d-md-none d-lg-none">
                 <button id="sidebarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#companiesInSMCollapse" aria-expanded="false" aria-controls="companiesInSMCollapse">
                     <div className="d-flex justify-content-between align-items-center p-2">
-                        <span>Companies</span>2
+                        <span>Companies</span>
                         <span><FaAngleDown /></span>
                     </div>
                 </button>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../../layouts/Layout';
-import api from '../../api/axios';
+import Layout from '../../../layouts/Layout';
+import api from '../../../api/axios';
 import { toast } from 'react-toastify';
 import { MdOutlineAddBox } from 'react-icons/md';
-import Paginate from '../../components/Paginate';
+import Paginate from '../../../components/Paginate';
 import { FaSearch } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
