@@ -74,16 +74,13 @@ export default function AiChatWidget() {
     const [unread, setUnread]               = useState(0);
     const [showScrollBtn, setShowScrollBtn] = useState(false);
     const [copiedIdx, setCopiedIdx]         = useState(null);
-    const [alerts, setAlerts]               = useState([]);
-    const [showAlerts, setShowAlerts]       = useState(false);
 
-    const bottomRef    = useRef(null);
-    const chipsRef     = useRef(null);
-    const messagesRef  = useRef(null);
-    const abortRef     = useRef(null);
-    const lastMsgRef   = useRef("");
-    const openRef      = useRef(open);
-    const dismissedRef = useRef(new Set());
+    const bottomRef   = useRef(null);
+    const chipsRef    = useRef(null);
+    const messagesRef = useRef(null);
+    const abortRef    = useRef(null);
+    const lastMsgRef  = useRef("");
+    const openRef     = useRef(open);
 
     useEffect(() => { openRef.current = open; }, [open]);
 
@@ -98,44 +95,15 @@ export default function AiChatWidget() {
         { label: "Full staff list",          msg: "Give me the full list of staff" },
     ];
 
-    const ALERT_STYLE = {
-        danger:  { background:"#fef2f2", borderLeft:"3px solid #ef4444", color:"#991b1b" },
-        warning: { background:"#fffbeb", borderLeft:"3px solid #f59e0b", color:"#92400e" },
-        info:    { background:"#eff6ff", borderLeft:"3px solid #3b82f6", color:"#1e40af" },
-    };
-
-    const fetchAlerts = async (cid) => {
-        try {
-            const { data } = await axios.post("/api/ai/alerts", { company_id: cid });
-            if (data.count > 0) {
-                const visible = data.alerts.filter(a => !dismissedRef.current.has(a.message));
-                setAlerts(visible);
-            } else {
-                setAlerts([]);
-                setShowAlerts(false);
-            }
-        } catch {
-            setAlerts([]);
-        }
-    };
-
-    const dismissAlert = (message) => {
-        dismissedRef.current.add(message);
-        setAlerts(prev => prev.filter(a => a.message !== message));
-    };
-
     useEffect(() => {
         const onCompanyChange = (e) => {
             const newId = Number(e.detail.companyId);
             setCompanyId(newId);
-            dismissedRef.current = new Set();
-            setAlerts([]);
             setMessages(prev => [...prev, {
                 role: "system-notice",
                 content: `Company changed to "${e.detail.companyName}". Data is now for this company.`,
                 timestamp: Date.now(),
             }]);
-            if (openRef.current) fetchAlerts(newId);
         };
         window.addEventListener("company-changed", onCompanyChange);
         return () => window.removeEventListener("company-changed", onCompanyChange);
@@ -154,10 +122,7 @@ export default function AiChatWidget() {
     }, [open]);
 
     useEffect(() => {
-        if (open) {
-            setUnread(0);
-            fetchAlerts(companyId);
-        }
+        if (open) setUnread(0);
     }, [open]);
 
     const handleScroll = (e) => {
@@ -287,17 +252,6 @@ export default function AiChatWidget() {
                             {/* <div style={{ fontSize:"11px", opacity:0.8, marginTop:"2px" }}>Powered by GPT-4o mini</div> */}
                         </div>
                         <div style={{ display:"flex", gap:"6px", alignItems:"center" }}>
-                            {alerts.length > 0 && (
-                                <button
-                                    onClick={() => setShowAlerts(v => !v)}
-                                    style={{ position:"relative", background: showAlerts ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"white", cursor:"pointer", fontSize:"11px", borderRadius:"6px", padding:"4px 10px", display:"flex", alignItems:"center", gap:"5px" }}
-                                >
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                                    </svg>
-                                    <span style={{ background:"#ef4444", borderRadius:"10px", padding:"1px 5px", fontSize:"10px", fontWeight:700 }}>{alerts.length}</span>
-                                </button>
-                            )}
                             <button
                                 onClick={() => { setMessages([]); try { sessionStorage.removeItem(STORAGE_KEY); } catch {} }}
                                 style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"white", cursor:"pointer", fontSize:"11px", borderRadius:"6px", padding:"4px 8px" }}
@@ -308,21 +262,6 @@ export default function AiChatWidget() {
                             ><AiOutlineClose size={16} /></button>
                         </div>
                     </div>
-
-                    {/* Alerts panel */}
-                    {showAlerts && alerts.length > 0 && (
-                        <div style={{ borderBottom:"1px solid #E2E8F0", background:"#fafafa" }}>
-                            {alerts.map((a, i) => {
-                                const s = ALERT_STYLE[a.type] || ALERT_STYLE.info;
-                                return (
-                                    <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", padding:"7px 12px", ...s, borderBottom: i < alerts.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none" }}>
-                                        <span style={{ flex:1, fontSize:"12px", lineHeight:1.4 }}>{a.message}</span>
-                                        <button onClick={() => dismissAlert(a.message)} style={{ flexShrink:0, background:"none", border:"none", cursor:"pointer", color:"inherit", opacity:0.5, padding:"0 0 0 6px", display:"flex", alignItems:"center" }}><AiOutlineClose size={13} /></button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
 
                     {/* Messages */}
                     <div
