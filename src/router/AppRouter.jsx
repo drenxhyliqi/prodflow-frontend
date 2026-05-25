@@ -10,7 +10,7 @@ import Production from "../pages/management/Production"
 import Staff from "../pages/management/Staff"
 import Planification from "../pages/management/Planification"
 import Clients from "../pages/management/Clients"
-import Sales from "../pages/management/Sales"
+import Sales from "../pages/management/sales/Sales"
 import Expenses from "../pages/management/Expenses"
 import Suppliers from "../pages/management/Suppliers"
 import Login from "../pages/Login"
@@ -18,14 +18,16 @@ import Profile from "../pages/management/Profile"
 import Users from "../pages/management/Users"
 import Warehouses from "../pages/management/Warehouses"
 import Maintenances from "../pages/management/Maintenances"
-import CreateSales from "../pages/management/CreateSales"
-import SalesInvoice from "../pages/management/SalesInvoice"
-import EditSales from "../pages/management/EditSales"
+import CreateSales from "../pages/management/sales/CreateSales"
+import SalesInvoice from "../pages/management/sales/SalesInvoice"
+import EditSales from "../pages/management/sales/EditSales"
 import ProductsStock from "../pages/management/ProductsStock"
 import Vacations from "../pages/management/Vacations"
 import Contracts from "../pages/management/Contracts"
 import Salaries from "../pages/management/Salaries"
-import ExpensesReport from "../pages/management/ExpensesReport"
+import ExpensesReport from "../pages/management/reports/ExpensesReport"
+import SalesReport from "../pages/management/reports/SalesReport"
+import ProductionReport from "../pages/management/reports/ProductionReport"
 
 const PersistentWidgets = () => {
   const { pathname } = useLocation();
@@ -64,6 +66,8 @@ const AppRouter = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/salaries" element={<Salaries />} />
         <Route path="/expensesReport" element={<ExpensesReport />} />
+        <Route path="/salesReport" element={<SalesReport />} />
+        <Route path="/productionReport" element={<ProductionReport />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       <PersistentWidgets />

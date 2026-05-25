@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Layout from '../../layouts/Layout';
-import api from '../../api/axios';
+import Layout from '../../../layouts/Layout';
+import api from '../../../api/axios';
 import { toast } from 'react-toastify';
 import { FaCalendarAlt, FaChartBar } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logoImage from '../../assets/img/prodflow_logo.png';
+import logoImage from '../../../assets/img/prodflow_logo.png';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const ExpensesReport = () => {

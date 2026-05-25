@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
-import api from '../../api/axios'
+import api from '../../../api/axios'
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io";
-import prodflow from '../../assets/img/prodflow_logo.png';
+import prodflow from '../../../assets/img/prodflow_logo.png';
 import { toast } from 'react-toastify';
 import { IoArrowBackSharp } from 'react-icons/io5';
 
