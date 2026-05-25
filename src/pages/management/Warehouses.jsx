@@ -14,8 +14,75 @@ const btnBrand = { backgroundColor: BRAND, color: '#fff', border: 'none' };
 
 const EMPTY_FORM = { warehouse: '', location: '', capacity: '' };
 
+function capacityColor(pct) {
+    if (pct < 60) return { bar: '#10b981', glow: 'rgba(16,185,129,0.3)',  track: '#d1fae5', text: '#059669' };
+    if (pct < 85) return { bar: '#f59e0b', glow: 'rgba(245,158,11,0.3)', track: '#fef3c7', text: '#d97706' };
+    return             { bar: '#ef4444', glow: 'rgba(239,68,68,0.3)',   track: '#fee2e2', text: '#dc2626' };
+}
+
+function CapacityBar({ used, total }) {
+    const [hover, setHover] = useState(false);
+
+    if (total == null || total === '' || Number(total) <= 0) {
+        return <span className="text-muted" style={{ fontSize: '0.78rem' }}>—</span>;
+    }
+
+    const usedNum  = Math.max(0, Number(used)  || 0);
+    const totalNum = Number(total);
+    const pct      = Math.min(100, Math.round((usedNum / totalNum) * 100));
+    const c        = capacityColor(pct);
+
+    return (
+        <div
+            style={{ minWidth: 180, position: 'relative', cursor: 'default' }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+        >
+            {/* Tooltip */}
+            {hover && (
+                <div style={{
+                    position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#0f172a', color: 'white', borderRadius: 8,
+                    padding: '6px 12px', fontSize: '0.74rem', whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.18)', zIndex: 100,
+                    pointerEvents: 'none',
+                }}>
+                    {usedNum.toLocaleString('en-US')} / {totalNum.toLocaleString('en-US')} units used
+                    <div style={{
+                        position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+                        borderWidth: '5px', borderStyle: 'solid',
+                        borderColor: '#0f172a transparent transparent transparent',
+                    }} />
+                </div>
+            )}
+
+            {/* Labels */}
+            <div className="d-flex justify-content-between align-items-center mb-1">
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: c.text, lineHeight: 1 }}>
+                    {pct}%
+                </span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8', lineHeight: 1 }}>
+                    {usedNum.toLocaleString('en-US')} / {totalNum.toLocaleString('en-US')}
+                </span>
+            </div>
+
+            {/* Progress track */}
+            <div style={{ height: 7, background: c.track, borderRadius: 10, overflow: 'hidden' }}>
+                <div style={{
+                    height: '100%', width: `${pct}%`,
+                    background: c.bar, borderRadius: 10,
+                    boxShadow: pct > 0 ? `0 0 8px ${c.glow}` : 'none',
+                    transition: 'width 0.65s cubic-bezier(0.4,0,0.2,1)',
+                }} />
+            </div>
+        </div>
+    );
+}
+
 const Warehouses = () => {
     const [warehouses, setWarehouses] = useState([]);
+    const [usageMap, setUsageMap]     = useState({});
     const [editWarehouse, setEditWarehouse] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const [pagination, setPagination] = useState({});
@@ -316,12 +383,13 @@ const Warehouses = () => {
                                     <th className="text-nowrap fw-semibold">Warehouse</th>
                                     <th className="text-nowrap fw-semibold">Location</th>
                                     <th className="text-nowrap fw-semibold">Capacity</th>
+                                    <th className="text-nowrap fw-semibold">Capacity Usage</th>
                                     <th className="text-end text-nowrap fw-semibold">Operations</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {warehouses.length === 0 ? (
-                                    <tr><td colSpan="5" className="text-center text-muted py-4">No data to show...</td></tr>
+                                    <tr><td colSpan="6" className="text-center text-muted py-4">No data to show...</td></tr>
                                 ) : (
                                     warehouses.map(wh => (
                                         <tr key={wh.wid}>
@@ -332,6 +400,12 @@ const Warehouses = () => {
                                                 {wh.capacity != null && wh.capacity !== ''
                                                     ? `${Number(wh.capacity).toLocaleString('en-US')} units`
                                                     : '—'}
+                                            </td>
+                                            <td style={{ minWidth: 200 }}>
+                                                <CapacityBar
+                                                    used={wh.used_capacity ?? wh.stock_count ?? wh.current_stock}
+                                                    total={wh.capacity}
+                                                />
                                             </td>
                                             <td className="text-end text-nowrap">
                                                 <button onClick={() => checkEditWarehouse(wh.wid)} className="btn btn-sm me-1" style={{ color: BRAND, background: BRAND + '12' }}>
