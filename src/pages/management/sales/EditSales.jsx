@@ -8,6 +8,8 @@ import { FaSearch, FaTrash } from 'react-icons/fa';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 
+const fmtMoney = n => Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const EditSales = () => {
     const { sale_number } = useParams();
     const [clients, setClients] = useState([]);
@@ -282,7 +284,7 @@ const EditSales = () => {
                             <div className="card rounded-4 mt-3">
                                 <div className="card-header rounded-4 d-flex justify-content-between align-items-center">
                                     <span className="fw-semibold">Selected Products</span>
-                                    <span className="fw-bold">Total: {saleTotal.toFixed(2)} €</span>
+                                    <span className="fw-bold">Total: {fmtMoney(saleTotal)} €</span>
                                 </div>
                                 <div className="card-body">
                                     <div className="table-responsive">
@@ -374,7 +376,7 @@ const EditSales = () => {
                                                                     />
                                                                 </td>
                                                                 <td>{p.product}</td>
-                                                                <td>{Number(p.price || 0).toFixed(2)} €</td>
+                                                                <td>{fmtMoney(p.price || 0)} €</td>
                                                             </tr>
                                                         );
                                                     })

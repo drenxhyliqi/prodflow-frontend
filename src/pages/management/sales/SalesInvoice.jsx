@@ -6,6 +6,8 @@ import prodflow from '../../../assets/img/prodflow_logo.png';
 import { toast } from 'react-toastify';
 import { IoArrowBackSharp } from 'react-icons/io5';
 
+const fmtMoney = n => Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const SalesInvoice = () => {
     const { sale_number } = useParams();
     const [informations, setInformations] = useState([]);
@@ -82,7 +84,7 @@ const SalesInvoice = () => {
                                                     <td className='text-nowrap'>{item.unit}</td>
                                                     <td className='text-nowrap'>{item.qty}</td>
                                                     <td className='text-nowrap text-end'>{item.price}€</td>
-                                                    <td className='text-nowrap text-end'>{(item.price * item.qty).toFixed(2)}€</td>
+                                                    <td className='text-nowrap text-end'>{fmtMoney(item.price * item.qty)}€</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -104,7 +106,7 @@ const SalesInvoice = () => {
                                                                 {isSame ? 'Grand Total:' : 'Subtotal:'}
                                                             </td>
                                                             <td className="fw-bold text-end">
-                                                                {grandTotal.toFixed(2)}€
+                                                                {fmtMoney(grandTotal)}€
                                                             </td>
                                                         </tr>
                                                         {!isSame && (
@@ -113,7 +115,7 @@ const SalesInvoice = () => {
                                                                     Offer:
                                                                 </td>
                                                                 <td className="fw-bold text-end">
-                                                                    {offerTotal.toFixed(2)}€
+                                                                    {fmtMoney(offerTotal)}€
                                                                 </td>
                                                             </tr>
                                                         )}
