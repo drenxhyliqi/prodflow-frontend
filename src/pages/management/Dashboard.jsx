@@ -162,6 +162,20 @@ export default function Dashboard() {
         ? Math.max(...topProducts.map(p => Number(p.total_value) || 0), 1)
         : 1;
 
+    // User Role
+    const [role, setRole] = useState(null)
+    const isAdmin = role === 'admin'
+
+    useEffect(() => {
+        api.get('/me')
+            .then((res) => {
+                setRole(res.data.role)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }, [])
+
     return (
         <Layout>
             {error && (
@@ -184,16 +198,18 @@ export default function Dashboard() {
                             : 'Loading company data...'}
                     </p>
                 </div>
-                <div className="d-flex gap-2 flex-wrap align-items-center">
-                    <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
-                        style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
-                        <MdOutlineFileDownload size={16} /> Export
-                    </button>
-                    <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
-                        style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
-                        <MdOutlineBarChart size={16} /> View Reports
-                    </button>
-                </div>
+                {isAdmin && (
+                    <div className="d-flex gap-2 flex-wrap align-items-center">
+                        <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
+                            <MdOutlineFileDownload size={16} /> Export
+                        </button>
+                        <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
+                            <MdOutlineBarChart size={16} /> View Reports
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* ── Stat Cards ─────────────────────────────────── */}
@@ -201,13 +217,15 @@ export default function Dashboard() {
                 {loading ? (
                     [0,1,2,3].map(i => <SkeletonCard key={i} />)
                 ) : <>
-                    <StatCard
-                        icon={<HiOutlineCurrencyDollar size={20} />}
-                        iconBg="#eff6ff" iconColor={BLUE}
-                        title="Total Revenue" subtitle="vs last month"
-                        value={fmtMoney(stats?.revenue?.this_month)}
-                        badge={stats?.revenue?.growth_percent}
-                    />
+                    {isAdmin && (
+                        <StatCard
+                            icon={<HiOutlineCurrencyDollar size={20} />}
+                            iconBg="#eff6ff" iconColor={BLUE}
+                            title="Total Revenue" subtitle="vs last month"
+                            value={fmtMoney(stats?.revenue?.this_month)}
+                            badge={stats?.revenue?.growth_percent}
+                        />
+                    )}
                     <StatCard
                         icon={<FiShoppingCart size={18} />}
                         iconBg="#f0fdf4" iconColor="#10b981"
@@ -240,84 +258,86 @@ export default function Dashboard() {
             </div>
 
             {/* ── Row 1: Revenue vs Expenses + Distribution ──── */}
-            <div className="row g-3 mb-4">
-                <div className="col-12 col-lg-8">
-                    <div className="bg-white rounded-4 shadow-sm p-4 h-100">
-                        <div className="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <h6 className="fw-bold mb-0">Revenue vs Expenses</h6>
-                                <small className="text-muted">Last 9 months performance</small>
+            {isAdmin && (
+                <div className="row g-3 mb-4">
+                    <div className="col-12 col-lg-8">
+                        <div className="bg-white rounded-4 shadow-sm p-4 h-100">
+                            <div className="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h6 className="fw-bold mb-0">Revenue vs Expenses</h6>
+                                    <small className="text-muted">Last 9 months performance</small>
+                                </div>
+                                <div className="d-flex gap-3">
+                                    {[['Revenue', BLUE], ['Expenses', '#93c5fd']].map(([l, c]) => (
+                                        <span key={l} className="d-flex align-items-center gap-1" style={{ fontSize: '0.74rem', color: '#374151' }}>
+                                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: c, display: 'inline-block' }} /> {l}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="d-flex gap-3">
-                                {[['Revenue', BLUE], ['Expenses', '#93c5fd']].map(([l, c]) => (
-                                    <span key={l} className="d-flex align-items-center gap-1" style={{ fontSize: '0.74rem', color: '#374151' }}>
-                                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: c, display: 'inline-block' }} /> {l}
-                                    </span>
-                                ))}
-                            </div>
+                            {loading ? <SkeletonChart height={220} /> : (
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <LineChart data={charts?.revenue_vs_expenses || []} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                        <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false}
+                                            tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
+                                        <Tooltip
+                                            formatter={(v, n) => [fmtMoney(v), n === 'revenue' ? 'Revenue' : 'Expenses']}
+                                            contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 12 }} />
+                                        <Line type="monotone" dataKey="revenue"  stroke={BLUE}    strokeWidth={2.5} dot={false} />
+                                        <Line type="monotone" dataKey="expenses" stroke="#93c5fd" strokeWidth={2}   dot={false} strokeDasharray="4 2" />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}
                         </div>
-                        {loading ? <SkeletonChart height={220} /> : (
-                            <ResponsiveContainer width="100%" height={220}>
-                                <LineChart data={charts?.revenue_vs_expenses || []} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false}
-                                        tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-                                    <Tooltip
-                                        formatter={(v, n) => [fmtMoney(v), n === 'revenue' ? 'Revenue' : 'Expenses']}
-                                        contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 12 }} />
-                                    <Line type="monotone" dataKey="revenue"  stroke={BLUE}    strokeWidth={2.5} dot={false} />
-                                    <Line type="monotone" dataKey="expenses" stroke="#93c5fd" strokeWidth={2}   dot={false} strokeDasharray="4 2" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        )}
                     </div>
-                </div>
 
-                <div className="col-12 col-lg-4">
-                    <div className="bg-white rounded-4 shadow-sm p-4 h-100 d-flex flex-column">
-                        <h6 className="fw-bold mb-0">{charts?.distribution_label || 'Distribution'}</h6>
-                        <small className="text-muted mb-2">{
-                            ({ 'Sales by Product': 'Distribution this month', 'Production by Product': 'All-time production units', 'Materials in Stock': 'Current stock quantities' })[charts?.distribution_label] ?? 'Distribution'
-                        }</small>
-                        {loading ? <SkeletonChart height={200} /> : (() => {
-                            const total = distribution.reduce((s, d) => s + (Number(d.value) || 0), 0);
-                            return <>
-                                <div style={{ flex: 1 }}>
-                                    <ResponsiveContainer width="100%" height={180}>
-                                        <PieChart>
-                                            <Pie data={distribution} cx="50%" cy="50%"
-                                                innerRadius={52} outerRadius={78}
-                                                dataKey="value" labelLine={false}>
-                                                {distribution.map((_, i) => (
-                                                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip
-                                                formatter={(v, n, p) => [fmtMoney(v), p.payload.name]}
-                                                contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 12 }} />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                    {distribution.map((item, i) => {
-                                        const pct = total > 0 ? ((Number(item.value) / total) * 100).toFixed(1) : '0.0';
-                                        return (
-                                            <div key={i} className="d-flex justify-content-between align-items-center">
-                                                <span className="d-flex align-items-center gap-2" style={{ fontSize: '0.78rem', color: '#374151' }}>
-                                                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: PIE_COLORS[i % PIE_COLORS.length], display: 'inline-block', flexShrink: 0 }} />
-                                                    {item.name}
-                                                </span>
-                                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151' }}>{pct}%</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </>;
-                        })()}
+                    <div className="col-12 col-lg-4">
+                        <div className="bg-white rounded-4 shadow-sm p-4 h-100 d-flex flex-column">
+                            <h6 className="fw-bold mb-0">{charts?.distribution_label || 'Distribution'}</h6>
+                            <small className="text-muted mb-2">{
+                                ({ 'Sales by Product': 'Distribution this month', 'Production by Product': 'All-time production units', 'Materials in Stock': 'Current stock quantities' })[charts?.distribution_label] ?? 'Distribution'
+                            }</small>
+                            {loading ? <SkeletonChart height={200} /> : (() => {
+                                const total = distribution.reduce((s, d) => s + (Number(d.value) || 0), 0);
+                                return <>
+                                    <div style={{ flex: 1 }}>
+                                        <ResponsiveContainer width="100%" height={180}>
+                                            <PieChart>
+                                                <Pie data={distribution} cx="50%" cy="50%"
+                                                    innerRadius={52} outerRadius={78}
+                                                    dataKey="value" labelLine={false}>
+                                                    {distribution.map((_, i) => (
+                                                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip
+                                                    formatter={(v, n, p) => [fmtMoney(v), p.payload.name]}
+                                                    contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 12 }} />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                        {distribution.map((item, i) => {
+                                            const pct = total > 0 ? ((Number(item.value) / total) * 100).toFixed(1) : '0.0';
+                                            return (
+                                                <div key={i} className="d-flex justify-content-between align-items-center">
+                                                    <span className="d-flex align-items-center gap-2" style={{ fontSize: '0.78rem', color: '#374151' }}>
+                                                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: PIE_COLORS[i % PIE_COLORS.length], display: 'inline-block', flexShrink: 0 }} />
+                                                        {item.name}
+                                                    </span>
+                                                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151' }}>{pct}%</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </>;
+                            })()}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* ── Row 2: Weekly Production (full width) ────────── */}
             <div className="row g-3 mb-4">
