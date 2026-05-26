@@ -207,7 +207,6 @@ const Users = () => {
                                         <select name="role" defaultValue={editUser.role} id="role" className="form-control rounded-4 shadow-none">
                                             <option value="admin">Admin</option>
                                             <option value="manager">Manager</option>
-                                            <option value="employee">Employee</option>
                                         </select>
                                     </div>
                                     <div className="col-12">
@@ -268,7 +267,6 @@ const Users = () => {
                                         <select name="role" id="role" className="form-control rounded-4 shadow-none">
                                             <option value="admin">Admin</option>
                                             <option value="manager">Manager</option>
-                                            <option value="employee">Employee</option>
                                         </select>
                                     </div>
                                     <div className="col-12">
