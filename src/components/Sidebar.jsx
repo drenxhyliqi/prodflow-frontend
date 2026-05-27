@@ -130,7 +130,8 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                         <NavLink to="/expenses" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><RiWallet3Line size={18} className='ms-2 me-2'/> Expenses</NavLink>
                     )}
 
-                    <NavLink to="/suppliers" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><CiDeliveryTruck size={18} className='ms-2 me-2'/> Suppliers</NavLink>
+                    <NavLink to="/suppliers" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaTruckRampBox size={18} className='ms-2 me-2'/> Suppliers</NavLink>
+                    <NavLink to="/trucks" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><CiDeliveryTruck size={18} className='ms-2 me-2'/> Trucks</NavLink>
                 </div>
             </div>
 
