@@ -30,6 +30,7 @@ import SalesReport from "../pages/management/reports/SalesReport"
 import ProductionReport from "../pages/management/reports/ProductionReport"
 import Orders from "../pages/management/orders"
 import NotFound from "../pages/NotFound"
+import MaterialsStockReport from "../pages/management/reports/MaterialStockReport"
 
 const PersistentWidgets = () => {
   const { pathname } = useLocation();
@@ -71,6 +72,7 @@ const AppRouter = () => {
         <Route path="/expensesReport" element={<ExpensesReport />} />
         <Route path="/salesReport" element={<SalesReport />} />
         <Route path="/productionReport" element={<ProductionReport />} />
+        <Route path="/materialsStockReport" element={<MaterialsStockReport />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <PersistentWidgets />
