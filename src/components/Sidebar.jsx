@@ -43,6 +43,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
         '/productionReport',
         '/salesReport',
         '/expensesReport',
+        '/materialsStockReport'
     ]
 
     useEffect(() => {
@@ -177,6 +178,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                         <NavLink to="/productionReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Production Report</NavLink>
                         <NavLink to="/salesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Sales Report</NavLink>
                         <NavLink to="/expensesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Expenses Report</NavLink>
+                        <NavLink to="/materialsStockReport" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Materials Stock Report</NavLink>
                     </div>
                 </div>
             )}
