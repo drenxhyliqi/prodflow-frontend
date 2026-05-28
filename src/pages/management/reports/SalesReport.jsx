@@ -224,7 +224,6 @@ export default function SalesReport() {
                 { accent: '#0D9488', bg: '#f0fdfa', value: fmt(summary.total_orders),                label: 'Total Orders',    sub: 'entries' },
                 { accent: '#7C3AED', bg: '#faf5ff', value: fmtDecimal(summary.avg_order_value),      label: 'Avg Order Value', sub: 'per transaction' },
                 { accent: AMBER,     bg: '#fffbeb', value: (summary.best_seller?.product_name || '—').slice(0, 18), label: 'Best Seller', sub: `${fmt(summary.best_seller?.units_sold)} units` },
-                { accent: revenueGrowthPos ? GREEN : RED, bg: revenueGrowthPos ? '#f0fdf4' : '#fef2f2', value: fmtGrowth(summary.revenue_growth), label: 'Revenue Growth', sub: 'MoM growth' },
             ],
             panels: [
                 {

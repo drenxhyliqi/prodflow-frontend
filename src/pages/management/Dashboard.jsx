@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
+import { toast } from 'react-toastify';
 import Layout from '../../layouts/Layout';
 import api from '../../api/axios';
 import {
     LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { MdOutlineFileDownload, MdOutlineBarChart } from 'react-icons/md';
+import { MdOutlineBarChart } from 'react-icons/md';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import { FiShoppingCart, FiUsers } from 'react-icons/fi';
 import { BsBoxSeam, BsBoxes } from 'react-icons/bs';
@@ -113,9 +114,10 @@ function ActivityItem({ item }) {
 
 /* ── Dashboard ───────────────────────────────────────────────── */
 export default function Dashboard() {
-    const [data,    setData]    = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error,   setError]   = useState(null);
+    const [data,             setData]             = useState(null);
+    const [loading,          setLoading]          = useState(true);
+    const [error,            setError]            = useState(null);
+    const [clearingActivity, setClearingActivity] = useState(false);
 
     const userName = (() => {
         try { const u = localStorage.getItem('user'); return u ? JSON.parse(u).user : 'User'; } catch { return 'User'; }
@@ -149,6 +151,14 @@ export default function Dashboard() {
         window.addEventListener('company-changed', h);
         return () => window.removeEventListener('company-changed', h);
     }, [load]);
+
+    const handleClearActivity = () => {
+        setClearingActivity(true);
+        api.post('/admin/dashboard/clear-activity')
+            .then(() => load())
+            .catch(() => toast.error('Failed to clear activity.'))
+            .finally(() => setClearingActivity(false));
+    };
 
     const stats          = data?.stats;
     const charts         = data?.charts;
@@ -193,23 +203,17 @@ export default function Dashboard() {
                     </p>
                     <h3 style={{ fontWeight: 800, marginBottom: 6, fontSize: '1.45rem' }}>Here's what's happening today</h3>
                     <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: 0 }}>
-                        {stats
-                            ? `Revenue is up ${Number(stats.revenue?.growth_percent || 0).toFixed(1)}% this month and production efficiency hit a new high.`
-                            : 'Loading company data...'}
+                        {!stats ? 'Loading company data...' : (() => {
+                            const efficiency = Number(stats.production?.efficiency_rate || 0);
+                            const revenue    = Number(stats.revenue?.this_month || 0);
+                            const orders     = Number(stats.transactions?.this_month || 0);
+                            if (efficiency > 0) return `Production is running at ${efficiency}% efficiency this month.`;
+                            if (revenue    > 0) return `${fmtMoney(revenue)} in revenue generated this month.`;
+                            if (orders     > 0) return `${fmt(orders)} order${orders !== 1 ? 's' : ''} placed this month.`;
+                            return 'No activity recorded yet for this period.';
+                        })()}
                     </p>
                 </div>
-                {isAdmin && (
-                    <div className="d-flex gap-2 flex-wrap align-items-center">
-                        <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
-                            <MdOutlineFileDownload size={16} /> Export
-                        </button>
-                        <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: 8 }}>
-                            <MdOutlineBarChart size={16} /> View Reports
-                        </button>
-                    </div>
-                )}
             </div>
 
             {/* ── Stat Cards ─────────────────────────────────── */}
@@ -451,8 +455,19 @@ export default function Dashboard() {
 
                     {/* Recent Activity */}
                     <div className="bg-white rounded-4 shadow-sm p-4 d-flex flex-column">
-                        <div className="mb-1">
+                        <div className="d-flex justify-content-between align-items-start mb-1">
                             <h6 className="fw-bold mb-0">Recent Activity</h6>
+                            <button
+                                onClick={handleClearActivity}
+                                disabled={clearingActivity || loading}
+                                className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                                style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: 6 }}
+                            >
+                                {clearingActivity
+                                    ? <span className="spinner-border spinner-border-sm" style={{ width: 10, height: 10 }} />
+                                    : 'Clear'
+                                }
+                            </button>
                         </div>
                         <small className="text-muted mb-3">Latest events</small>
                         <div style={{ overflowY: 'auto' }}>
