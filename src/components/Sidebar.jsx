@@ -14,6 +14,7 @@ import { CiDeliveryTruck } from 'react-icons/ci'
 import { TbReport, TbReportMoney, TbUsers, TbUserScan } from 'react-icons/tb'
 import { GrNotes } from 'react-icons/gr'
 import api from '../api/axios.jsx'
+import { PiInvoice } from 'react-icons/pi'
 
 const Sidebar = ({ menuVisible, setMenuVisible }) => {
     const navigate = useNavigate()
@@ -124,6 +125,7 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
                 </button>
                 <div className="collapse show" id="salesFinanceCollapse">
                     <NavLink to="/clients" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><FaUsers size={18} className='ms-2 me-2'/> Clients</NavLink>
+                    <NavLink to="/orders" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><PiInvoice size={18} className='ms-2 me-2'/> Orders</NavLink>
                     <NavLink to="/sales" className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><MdOutlineShoppingCart size={18} className='ms-2 me-2'/> Sales</NavLink>
 
                     {isAdmin && (

@@ -28,10 +28,11 @@ import Salaries from "../pages/management/Salaries"
 import ExpensesReport from "../pages/management/reports/ExpensesReport"
 import SalesReport from "../pages/management/reports/SalesReport"
 import ProductionReport from "../pages/management/reports/ProductionReport"
-import Orders from "../pages/management/orders"
+import Orders from "../pages/management/Orders"
 import NotFound from "../pages/NotFound"
 import MaterialsStockReport from "../pages/management/reports/MaterialStockReport"
 import Trucks from "../pages/management/Trucks"
+import AccpetInvite from "../pages/management/AccpetInvite"
 
 const PersistentWidgets = () => {
   const { pathname } = useLocation();
@@ -75,6 +76,7 @@ const AppRouter = () => {
         <Route path="/salesReport" element={<SalesReport />} />
         <Route path="/productionReport" element={<ProductionReport />} />
         <Route path="/materialsStockReport" element={<MaterialsStockReport />} />
+        <Route path="/accept-invite" element={<AccpetInvite />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <PersistentWidgets />
