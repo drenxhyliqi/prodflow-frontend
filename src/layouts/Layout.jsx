@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
+import { useBackgroundRefresh } from '../hooks/useBackgroundRefresh';
+
 
 const Layout = ({children}) => {
     const [menuVisible, setMenuVisible] = useState(true)
-
+    useBackgroundRefresh();
     return (
         <>
             {/* Sidebar */}
