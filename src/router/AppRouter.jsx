@@ -33,6 +33,7 @@ import NotFound from "../pages/NotFound"
 import MaterialsStockReport from "../pages/management/reports/MaterialStockReport"
 import Trucks from "../pages/management/Trucks"
 import AccpetInvite from "../pages/management/AccpetInvite"
+import Signup from "../pages/Signup"
 
 const PersistentWidgets = () => {
   const { pathname } = useLocation();
@@ -68,6 +69,7 @@ const AppRouter = () => {
         <Route path="/trucks" element={<Trucks />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/vacations" element={<Vacations />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/salaries" element={<Salaries />} />
