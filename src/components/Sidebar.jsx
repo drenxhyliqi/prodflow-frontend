@@ -36,17 +36,23 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
 
     const isAdmin = role === 'admin'
 
+    const reportPages = [
+        '/reports',
+        '/productionReport',
+        '/salesReport',
+        '/expensesReport',
+        '/materialsStockReport',
+    ]
+
     const adminOnlyPages = [
         '/companies',
         '/products_stock',
         '/expenses',
         '/users',
-        '/reports',
-        '/productionReport',
-        '/salesReport',
-        '/expensesReport',
-        '/materialsStockReport'
+        ...reportPages,
     ]
+
+    const isReportsArea = reportPages.includes(location.pathname)
 
     useEffect(() => {
         if (
@@ -172,19 +178,12 @@ const Sidebar = ({ menuVisible, setMenuVisible }) => {
 
             {isAdmin && (
                 <div className="p-2 mb-0 mb-md-3 mb-lg-3">
-                    <button id="sidebarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#reportsCollapse">
-                        <div className="d-flex justify-content-between align-items-center p-2">
-                            <span>Reports</span>
-                            <span><FaAngleDown /></span>
-                        </div>
-                    </button>
-                    <div className="collapse show" id="reportsCollapse">
-                        <NavLink to="/reports" end className={({ isActive }) => "sidebar-link d-flex align-items-center" + (isActive ? " sidebar-link-active" : "")}><TbReport size={18} className='ms-2 me-2'/> Reports Center</NavLink>
-                        <NavLink to="/productionReport" className={({ isActive }) => "sidebar-link d-flex align-items-center ps-4" + (isActive ? " sidebar-link-active" : "")} style={{ fontSize: '0.88rem' }}><TbReport size={16} className='ms-2 me-2'/> Production</NavLink>
-                        <NavLink to="/salesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center ps-4" + (isActive ? " sidebar-link-active" : "")} style={{ fontSize: '0.88rem' }}><TbReport size={16} className='ms-2 me-2'/> Sales</NavLink>
-                        <NavLink to="/expensesReport" className={({ isActive }) => "sidebar-link d-flex align-items-center ps-4" + (isActive ? " sidebar-link-active" : "")} style={{ fontSize: '0.88rem' }}><TbReport size={16} className='ms-2 me-2'/> Expenses</NavLink>
-                        <NavLink to="/materialsStockReport" className={({ isActive }) => "sidebar-link d-flex align-items-center ps-4" + (isActive ? " sidebar-link-active" : "")} style={{ fontSize: '0.88rem' }}><TbReport size={16} className='ms-2 me-2'/> Materials Stock</NavLink>
-                    </div>
+                    <NavLink
+                        to="/reports"
+                        className={'sidebar-link d-flex align-items-center' + (isReportsArea ? ' sidebar-link-active' : '')}
+                    >
+                        <TbReport size={18} className="ms-2 me-2" /> Reports
+                    </NavLink>
                 </div>
             )}
         </aside>

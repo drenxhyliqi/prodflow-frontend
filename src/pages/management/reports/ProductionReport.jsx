@@ -33,8 +33,6 @@ const STATUS_COLORS = {
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 /* ── Helpers ────────────────────────────────────────────────── */
-const todayStr  = () => new Date().toISOString().slice(0, 10)
-const daysAgo   = n  => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10)
 const fmt       = n  => n == null ? '—' : Number(n).toLocaleString('en-US')
 const fmtPct    = n  => n == null ? '—' : `${Number(n).toFixed(1)}%`
 
@@ -141,11 +139,8 @@ function DonutLabel({ viewBox, total }) {
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
 export default function ProductionReport() {
-    const { checking, denied, startDate: accessStart, endDate: accessEnd, withRunId, runId } =
-        useReportAccess('production')
+    const { checking, denied, startDate, endDate, withRunId, runId } = useReportAccess('production')
 
-    const [startDate, setStartDate] = useState('')
-    const [endDate, setEndDate] = useState('')
     const [loading,    setLoading]    = useState(false)
     const [summary,    setSummary]    = useState(null)
     const [trends,     setTrends]     = useState(null)
@@ -156,12 +151,11 @@ export default function ProductionReport() {
     const [exporting,  setExporting]  = useState(false)
 
     /* ── Fetch all 5 endpoints ──────────────────────────────── */
-    const generate = useCallback(async (sd, ed) => {
-        if (!runId) return
-        if (sd > ed) { toast.error('End date must be after start date.'); return }
+    const loadReport = useCallback(async () => {
+        if (!runId || !startDate || !endDate) return
         setLoading(true)
         try {
-            const q = withRunId(`start_date=${sd}&end_date=${ed}`)
+            const q = withRunId(`start_date=${startDate}&end_date=${endDate}`)
             const [sumR, trendR, machR, prodR, statR] = await Promise.all([
                 api.get(`/admin/reports/production/summary?${q}`),
                 api.get(`/admin/reports/production/trends?${q}`),
@@ -175,24 +169,17 @@ export default function ProductionReport() {
             setTopProducts(Array.isArray(prodR.data) ? prodR.data : [])
             setStatusDist(statR.data)
         } catch {
-            toast.error('Failed to generate report. Please try again.')
+            toast.error('Failed to load report. Please try again.')
         } finally {
             setLoading(false)
         }
-    }, [runId, withRunId])
+    }, [runId, withRunId, startDate, endDate])
 
     useEffect(() => {
-        if (accessStart && accessEnd) {
-            setStartDate(accessStart)
-            setEndDate(accessEnd)
+        if (!denied && !checking && runId && startDate && endDate) {
+            loadReport()
         }
-    }, [accessStart, accessEnd])
-
-    useEffect(() => {
-        if (!denied && !checking && runId && accessStart && accessEnd) {
-            generate(accessStart, accessEnd)
-        }
-    }, [denied, checking, runId, accessStart, accessEnd, generate])
+    }, [denied, checking, runId, startDate, endDate, loadReport])
 
     /* ── Derived data ───────────────────────────────────────── */
     const trendData = useMemo(() => {
@@ -307,11 +294,6 @@ export default function ProductionReport() {
     }, [summary, trends, machines, topProducts, statusDist])
 
     /* ── Handlers ───────────────────────────────────────────── */
-    const handleGenerate = (e) => {
-        e.preventDefault()
-        generate(startDate, endDate)
-    }
-
     const handleExport = async () => {
         if (!summary || exporting) return
         setExporting(true)
@@ -339,65 +321,25 @@ export default function ProductionReport() {
     return (
         <Layout>
 
-            {/* ── Page Header ────────────────────────────────── */}
-            <div className="mb-4">
-                <h4 className="fw-bold mb-0" style={{ color: '#0f172a' }}>Production Report</h4>
-                <small style={{ color: '#6b7280' }}>Operational analytics · Manufacturing</small>
-            </div>
-
-            {/* ── Date Filter Bar ─────────────────────────────── */}
-            <div className="bg-white rounded-4 shadow-sm p-3 p-md-4 mb-4">
-                <form onSubmit={handleGenerate}>
-                    <div className="d-flex flex-wrap align-items-end gap-3">
-                        <div style={{ flex: '1 1 180px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 6 }}>Start date</label>
-                            <input
-                                type="date"
-                                className="form-control shadow-none"
-                                style={{ fontSize: '0.875rem', borderRadius: 10, border: '1px solid #e2e8f0', height: 42 }}
-                                value={startDate}
-                                max={endDate}
-                                onChange={e => setStartDate(e.target.value)}
-                            />
-                        </div>
-                        <div style={{ flex: '1 1 180px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 6 }}>End date</label>
-                            <input
-                                type="date"
-                                className="form-control shadow-none"
-                                style={{ fontSize: '0.875rem', borderRadius: 10, border: '1px solid #e2e8f0', height: 42 }}
-                                value={endDate}
-                                min={startDate}
-                                onChange={e => setEndDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="d-flex gap-2 align-items-center" style={{ marginTop: 'auto' }}>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="btn d-flex align-items-center gap-2 fw-semibold px-4"
-                                style={{ background: BLUE, color: 'white', border: 'none', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}
-                            >
-                                {loading
-                                    ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Generating...</>
-                                    : 'Generate report'
-                                }
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExport}
-                                disabled={!summary || loading || exporting}
-                                className="btn d-flex align-items-center gap-2 fw-semibold px-4"
-                                style={{ background: 'white', border: '1px solid #e2e8f0', color: '#374151', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}
-                            >
-                                {exporting
-                                    ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Generating...</>
-                                    : <><MdOutlineFileDownload size={17} /> Export report</>
-                                }
-                            </button>
-                        </div>
-                    </div>
-                </form>
+            <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                <div>
+                    <h4 className="fw-bold mb-0" style={{ color: '#0f172a' }}>Production Report</h4>
+                    <small style={{ color: '#6b7280' }}>
+                        {startDate && endDate ? `${startDate} — ${endDate}` : 'Operational analytics · Manufacturing'}
+                    </small>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={!summary || loading || exporting}
+                    className="btn d-flex align-items-center gap-2 fw-semibold px-4"
+                    style={{ background: 'white', border: '1px solid #e2e8f0', color: '#374151', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}
+                >
+                    {exporting
+                        ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Exporting...</>
+                        : <><MdOutlineFileDownload size={17} /> Export report</>
+                    }
+                </button>
             </div>
 
             {/* ── KPI Cards ───────────────────────────────────── */}

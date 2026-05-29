@@ -16,8 +16,6 @@ const RED = '#EF4444'
 const ORANGE = '#F59E0B'
 const GREEN = '#22C55E'
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
-const daysAgo = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10)
 const fmtMoney = (n) =>
     Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -105,24 +103,17 @@ function ExpenseTooltip({ active, payload, label }) {
 }
 
 export default function ExpensesReport() {
-    const { checking, denied, startDate: accessStart, endDate: accessEnd, withRunId, runId } =
-        useReportAccess('expenses')
+    const { checking, denied, startDate, endDate, withRunId, runId } = useReportAccess('expenses')
 
-    const [startDate, setStartDate] = useState('')
-    const [endDate, setEndDate] = useState('')
     const [reportData, setReportData] = useState([])
     const [loading, setLoading] = useState(false)
     const [exporting, setExporting] = useState(false)
 
-    const generate = useCallback(async (sd, ed) => {
-        if (!runId) return
-        if (sd > ed) {
-            toast.error('End date must be after start date.')
-            return
-        }
+    const loadReport = useCallback(async () => {
+        if (!runId || !startDate || !endDate) return
         setLoading(true)
         try {
-            const response = await api.get(`/admin/expenses_report?${withRunId(`start_date=${sd}&end_date=${ed}`)}`)
+            const response = await api.get(`/admin/expenses_report?${withRunId(`start_date=${startDate}&end_date=${endDate}`)}`)
             const data = response.data.data || response.data
             const list = Array.isArray(data) ? data : []
             setReportData(list)
@@ -133,20 +124,13 @@ export default function ExpensesReport() {
         } finally {
             setLoading(false)
         }
-    }, [runId, withRunId])
+    }, [runId, withRunId, startDate, endDate])
 
     useEffect(() => {
-        if (accessStart && accessEnd) {
-            setStartDate(accessStart)
-            setEndDate(accessEnd)
+        if (!denied && !checking && runId && startDate && endDate) {
+            loadReport()
         }
-    }, [accessStart, accessEnd])
-
-    useEffect(() => {
-        if (!denied && !checking && runId && accessStart && accessEnd) {
-            generate(accessStart, accessEnd)
-        }
-    }, [denied, checking, runId, accessStart, accessEnd, generate])
+    }, [denied, checking, runId, startDate, endDate, loadReport])
 
     const totalAmount = useMemo(
         () => reportData.reduce((sum, item) => sum + parseFloat(item.price || 0), 0),
@@ -209,11 +193,6 @@ export default function ExpensesReport() {
         }
     }, [reportData, totalAmount, avgAmount, chartData])
 
-    const handleGenerate = (e) => {
-        e.preventDefault()
-        generate(startDate, endDate)
-    }
-
     const handleExport = async () => {
         if (!pdfProps || exporting) return
         setExporting(true)
@@ -243,32 +222,25 @@ export default function ExpensesReport() {
 
     return (
         <Layout>
-            <div className="mb-4">
-                <h4 className="fw-bold mb-0" style={{ color: '#0f172a' }}>Expenses Report</h4>
-                <small style={{ color: '#6b7280' }}>Financial analytics · Expenses</small>
-            </div>
-
-            <div className="bg-white rounded-4 shadow-sm p-3 p-md-4 mb-4">
-                <form onSubmit={handleGenerate}>
-                    <div className="d-flex flex-wrap align-items-end gap-3">
-                        <div style={{ flex: '1 1 180px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 6 }}>Start date</label>
-                            <input type="date" className="form-control shadow-none" style={{ fontSize: '0.875rem', borderRadius: 10, border: '1px solid #e2e8f0', height: 42 }} value={startDate} max={endDate} onChange={(e) => setStartDate(e.target.value)} />
-                        </div>
-                        <div style={{ flex: '1 1 180px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280', display: 'block', marginBottom: 6 }}>End date</label>
-                            <input type="date" className="form-control shadow-none" style={{ fontSize: '0.875rem', borderRadius: 10, border: '1px solid #e2e8f0', height: 42 }} value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} />
-                        </div>
-                        <div className="d-flex gap-2 align-items-center" style={{ marginTop: 'auto' }}>
-                            <button type="submit" disabled={loading} className="btn d-flex align-items-center gap-2 fw-semibold px-4" style={{ background: BLUE, color: 'white', border: 'none', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}>
-                                {loading ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Generating...</> : 'Generate report'}
-                            </button>
-                            <button type="button" onClick={handleExport} disabled={!reportData.length || loading || exporting} className="btn d-flex align-items-center gap-2 fw-semibold px-4" style={{ background: 'white', border: '1px solid #e2e8f0', color: '#374151', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}>
-                                {exporting ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Generating...</> : <><MdOutlineFileDownload size={17} /> Export report</>}
-                            </button>
-                        </div>
-                    </div>
-                </form>
+            <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                <div>
+                    <h4 className="fw-bold mb-0" style={{ color: '#0f172a' }}>Expenses Report</h4>
+                    <small style={{ color: '#6b7280' }}>
+                        {startDate && endDate ? `${startDate} — ${endDate}` : 'Financial analytics · Expenses'}
+                    </small>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={!reportData.length || loading || exporting}
+                    className="btn d-flex align-items-center gap-2 fw-semibold px-4"
+                    style={{ background: 'white', border: '1px solid #e2e8f0', color: '#374151', borderRadius: 10, height: 42, whiteSpace: 'nowrap' }}
+                >
+                    {exporting
+                        ? <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Exporting...</>
+                        : <><MdOutlineFileDownload size={17} /> Export report</>
+                    }
+                </button>
             </div>
 
             <div className="row g-3 mb-4">

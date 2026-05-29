@@ -355,7 +355,7 @@ export default function ReportsHub() {
                                                     >
                                                         0{index + 1}
                                                     </span>
-                                                    {runStatus && <RunDot status={runStatus} />}
+                                                    {runStatus && <JobDot status={runStatus} />}
                                                 </div>
                                                 <p className="mb-0 text-muted small text-truncate">{report.description}</p>
                                                 {run?.error_message && (

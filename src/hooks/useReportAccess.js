@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import api from '../api/axios'
@@ -58,6 +58,12 @@ export function useReportAccess(expectedType) {
         }
     }, [runId, expectedType, navigate])
 
+    const withRunId = useCallback((baseQuery = '') => {
+        const sep = baseQuery.includes('?') ? '&' : baseQuery ? '&' : ''
+        if (!baseQuery) return `run_id=${encodeURIComponent(runId)}`
+        return `${baseQuery}${sep}run_id=${encodeURIComponent(runId)}`
+    }, [runId])
+
     const querySuffix = runId ? `run_id=${encodeURIComponent(runId)}` : ''
 
     return {
@@ -67,12 +73,7 @@ export function useReportAccess(expectedType) {
         denied,
         startDate: access?.start_date ?? searchParams.get('start_date'),
         endDate: access?.end_date ?? searchParams.get('end_date'),
-        /** Append run_id to report API query strings */
-        withRunId: (baseQuery = '') => {
-            const sep = baseQuery.includes('?') ? '&' : baseQuery ? '&' : ''
-            if (!baseQuery) return `run_id=${encodeURIComponent(runId)}`
-            return `${baseQuery}${sep}run_id=${encodeURIComponent(runId)}`
-        },
+        withRunId,
         querySuffix,
     }
 }
