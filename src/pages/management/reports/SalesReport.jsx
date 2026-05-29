@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout'
 import api from '../../../api/axios'
 import { toast } from 'react-toastify'
 import { exportToPDF } from '../../../utils/exportToPDF'
+import { useReportAccess } from '../../../hooks/useReportAccess'
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     LineChart, Line,
@@ -138,8 +139,11 @@ function OrdersTooltip({ active, payload, label }) {
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
 export default function SalesReport() {
-    const [startDate,      setStartDate]      = useState(daysAgo(30))
-    const [endDate,        setEndDate]        = useState(todayStr())
+    const { checking, denied, startDate: accessStart, endDate: accessEnd, withRunId, runId } =
+        useReportAccess('sales')
+
+    const [startDate, setStartDate] = useState('')
+    const [endDate, setEndDate] = useState('')
     const [loading,        setLoading]        = useState(false)
     const [exporting,      setExporting]      = useState(false)
     const [summary,        setSummary]        = useState(null)
@@ -151,10 +155,11 @@ export default function SalesReport() {
 
     /* ── Fetch all 5 endpoints ──────────────────────────────── */
     const generate = useCallback(async (sd, ed) => {
+        if (!runId) return
         if (sd > ed) { toast.error('End date must be after start date.'); return }
         setLoading(true)
         try {
-            const q = `start_date=${sd}&end_date=${ed}`
+            const q = withRunId(`start_date=${sd}&end_date=${ed}`)
             const [sumR, trendR, prodR, clientR, ordersR] = await Promise.all([
                 api.get(`/admin/reports/sales/summary?${q}`),
                 api.get(`/admin/reports/sales/trends?${q}`),
@@ -172,9 +177,20 @@ export default function SalesReport() {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [runId, withRunId])
 
-    useEffect(() => { generate(startDate, endDate) }, []) // eslint-disable-line
+    useEffect(() => {
+        if (accessStart && accessEnd) {
+            setStartDate(accessStart)
+            setEndDate(accessEnd)
+        }
+    }, [accessStart, accessEnd])
+
+    useEffect(() => {
+        if (!denied && !checking && runId && accessStart && accessEnd) {
+            generate(accessStart, accessEnd)
+        }
+    }, [denied, checking, runId, accessStart, accessEnd, generate])
 
     /* ── Derived data ───────────────────────────────────────── */
     const weeklyData = useMemo(() =>
@@ -282,6 +298,16 @@ export default function SalesReport() {
     }
 
     /* ──────────────────────────────────────────────────────── */
+    if (checking) {
+        return (
+            <Layout>
+                <div className="text-center text-muted py-5">Verifying report access…</div>
+            </Layout>
+        )
+    }
+
+    if (denied) return null
+
     return (
         <Layout>
 

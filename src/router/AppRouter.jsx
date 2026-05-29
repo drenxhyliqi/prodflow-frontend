@@ -31,6 +31,7 @@ import ProductionReport from "../pages/management/reports/ProductionReport"
 import Orders from "../pages/management/Orders"
 import NotFound from "../pages/NotFound"
 import MaterialsStockReport from "../pages/management/reports/MaterialStockReport"
+import ReportsHub from "../pages/management/reports/ReportsHub"
 import Trucks from "../pages/management/Trucks"
 import AccpetInvite from "../pages/management/AccpetInvite"
 import Signup from "../pages/Signup"
@@ -74,6 +75,7 @@ const AppRouter = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/salaries" element={<Salaries />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/reports" element={<ReportsHub />} />
         <Route path="/expensesReport" element={<ExpensesReport />} />
         <Route path="/salesReport" element={<SalesReport />} />
         <Route path="/productionReport" element={<ProductionReport />} />

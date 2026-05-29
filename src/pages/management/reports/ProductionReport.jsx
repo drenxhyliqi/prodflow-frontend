@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout'
 import api from '../../../api/axios'
 import { toast } from 'react-toastify'
 import { exportToPDF } from '../../../utils/exportToPDF'
+import { useReportAccess } from '../../../hooks/useReportAccess'
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -140,8 +141,11 @@ function DonutLabel({ viewBox, total }) {
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
 export default function ProductionReport() {
-    const [startDate,  setStartDate]  = useState(daysAgo(30))
-    const [endDate,    setEndDate]    = useState(todayStr())
+    const { checking, denied, startDate: accessStart, endDate: accessEnd, withRunId, runId } =
+        useReportAccess('production')
+
+    const [startDate, setStartDate] = useState('')
+    const [endDate, setEndDate] = useState('')
     const [loading,    setLoading]    = useState(false)
     const [summary,    setSummary]    = useState(null)
     const [trends,     setTrends]     = useState(null)
@@ -153,10 +157,11 @@ export default function ProductionReport() {
 
     /* ── Fetch all 5 endpoints ──────────────────────────────── */
     const generate = useCallback(async (sd, ed) => {
+        if (!runId) return
         if (sd > ed) { toast.error('End date must be after start date.'); return }
         setLoading(true)
         try {
-            const q = `start_date=${sd}&end_date=${ed}`
+            const q = withRunId(`start_date=${sd}&end_date=${ed}`)
             const [sumR, trendR, machR, prodR, statR] = await Promise.all([
                 api.get(`/admin/reports/production/summary?${q}`),
                 api.get(`/admin/reports/production/trends?${q}`),
@@ -174,9 +179,20 @@ export default function ProductionReport() {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [runId, withRunId])
 
-    useEffect(() => { generate(startDate, endDate) }, []) // eslint-disable-line
+    useEffect(() => {
+        if (accessStart && accessEnd) {
+            setStartDate(accessStart)
+            setEndDate(accessEnd)
+        }
+    }, [accessStart, accessEnd])
+
+    useEffect(() => {
+        if (!denied && !checking && runId && accessStart && accessEnd) {
+            generate(accessStart, accessEnd)
+        }
+    }, [denied, checking, runId, accessStart, accessEnd, generate])
 
     /* ── Derived data ───────────────────────────────────────── */
     const trendData = useMemo(() => {
@@ -310,6 +326,16 @@ export default function ProductionReport() {
     }
 
     /* ──────────────────────────────────────────────────────── */
+    if (checking) {
+        return (
+            <Layout>
+                <div className="text-center text-muted py-5">Verifying report access…</div>
+            </Layout>
+        )
+    }
+
+    if (denied) return null
+
     return (
         <Layout>
 
