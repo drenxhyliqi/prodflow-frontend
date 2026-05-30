@@ -268,13 +268,12 @@ const Vacations = () => {
         <Layout>
             {/* Header */}
             <div
-                className="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-4 mb-4"
-                style={{ background: '#035dad1a' }}
+                className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4"
             >
                 <div>
-                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: '#5a8a7a' }}>Human Resources</p>
-                    <h4 className='fw-bold mb-1' style={{ color: '#1a2e2a' }}>Vacation Management</h4>
-                    <small style={{ color: '#5a7a72' }}>Review, approve, and track staff time off in one place.</small>
+                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em' }}>Human Resources</p>
+                    <h4 className='fw-bold mb-1'>Vacation Management</h4>
+                    <small>Review, approve, and track staff time off in one place.</small>
                 </div>
                 <button
                     className="btn rounded-pill d-flex align-items-center gap-2 fw-semibold px-4 py-2"

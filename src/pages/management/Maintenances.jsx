@@ -174,7 +174,7 @@ const Maintenances = () => {
     return (
         <Layout>
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-4 mb-4" style={{ background: BRAND + '1a' }}>
+            <div className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4">
                 <div>
                     <h4 className='fw-bold mb-1'>Maintenances Overview</h4>
                     <small className='text-muted'>Manage tracking for all machines.</small>

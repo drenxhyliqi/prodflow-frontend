@@ -19,12 +19,13 @@ import { PiInvoice } from 'react-icons/pi'
 const Sidebar = ({ menuVisible, setMenuVisible }) => {
     const navigate = useNavigate()
     const location = useLocation()
-    const [role, setRole] = useState(null)
+    const [role, setRole] = useState(() => localStorage.getItem('role'))
 
     useEffect(() => {
         api.get('/me')
             .then((res) => {
                 setRole(res.data.role)
+                localStorage.setItem('role', res.data.role)
             })
             .catch((error) => {
                 if (error.response?.status === 401 || error.response?.status === 403) {
