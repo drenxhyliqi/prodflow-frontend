@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import { useBackgroundRefresh } from '../hooks/useBackgroundRefresh';
+import '../styles/hero.css';
 
 
 const Layout = ({children}) => {

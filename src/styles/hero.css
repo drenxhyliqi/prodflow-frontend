@@ -1,0 +1,106 @@
+/* ───────────────────────────────────────────────────────────────
+   Hero banner — premium animated gradient background.
+   Reusable across all page headers: just add class "hero-banner".
+   Only the background + animation are shared; layout/content stay
+   in each page. On-dark text/button tones are handled here so pages
+   don't need per-element colour edits.
+──────────────────────────────────────────────────────────────── */
+
+.hero-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    color: #fff;
+    background:
+        radial-gradient(120% 140% at 0% 0%, rgba(96,165,250,0.45) 0%, rgba(96,165,250,0) 45%),
+        radial-gradient(120% 160% at 100% 100%, rgba(29,78,216,0.55) 0%, rgba(29,78,216,0) 50%),
+        linear-gradient(120deg, #1e3a8a 0%, #2563EB 52%, #1d4ed8 100%);
+    box-shadow: 0 18px 40px -16px rgba(37,99,235,0.55), 0 2px 8px rgba(15,23,42,0.12);
+    animation: heroFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Shimmer sweep */
+.hero-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.10) 48%, transparent 66%);
+    background-size: 250% 100%;
+    animation: heroShimmer 7s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Keep real content above the decorative layers */
+.hero-banner > div,
+.hero-banner > button,
+.hero-banner > a {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── On-dark content tones (so pages keep their existing markup) ── */
+.hero-banner .text-uppercase { color: rgba(255,255,255,0.90) !important; }
+.hero-banner small           { color: rgba(255,255,255,0.82) !important; }
+
+/* Header action button → subtle glass treatment on the gradient */
+.hero-banner .btn {
+    background: rgba(255,255,255,0.16) !important;
+    border: 1px solid rgba(255,255,255,0.35) !important;
+    color: #fff !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.hero-banner .btn:hover {
+    background: rgba(255,255,255,0.26) !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    transform: translateY(-1px);
+}
+
+/* ── Decorative floating blobs (used by the dashboard hero) ── */
+.hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(34px);
+    pointer-events: none;
+    will-change: transform;
+}
+.hero-blob-1 { width: 240px; height: 240px; top: -90px;  right: 8%;   background: rgba(147,197,253,0.40); animation: heroFloat 11s ease-in-out infinite; }
+.hero-blob-2 { width: 180px; height: 180px; bottom: -80px; right: 26%; background: rgba(96,165,250,0.30);  animation: heroFloat 14s ease-in-out infinite reverse; }
+.hero-blob-3 { width: 150px; height: 150px; top: 20%;    left: -50px; background: rgba(191,219,254,0.22); animation: heroFloat 16s ease-in-out infinite; }
+
+/* ── Glass stat chips (dashboard hero) ── */
+.dash-chip {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 12px 16px;
+    min-width: 132px;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+.dash-chip:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.30);
+}
+.dash-chip-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Keyframes ── */
+@keyframes heroFade    { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes heroShimmer { 0% { background-position: 150% 0; } 55%, 100% { background-position: -50% 0; } }
+@keyframes heroFloat   { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-16px, 14px) scale(1.08); } }
+
+/* ── Respect reduced-motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+    .hero-banner,
+    .hero-banner::after,
+    .hero-blob { animation: none !important; }
+    .dash-chip,
+    .hero-banner .btn { transition: none; }
+}

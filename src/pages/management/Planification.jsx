@@ -259,13 +259,12 @@ const Planification = () => {
         <Layout>
             {/* Header */}
             <div
-                className="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-4 mb-4"
-                style={{ background: '#035dad1a' }}
+                className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4"
             >
                 <div>
-                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: '#5a8a7a' }}>Production</p>
-                    <h4 className='fw-bold mb-1' style={{ color: '#1a2e2a' }}>Planification Overview</h4>
-                    <small style={{ color: '#5a7a72' }}>Plan, schedule and monitor production runs across all companies.</small>
+                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em' }}>Production</p>
+                    <h4 className='fw-bold mb-1'>Planification Overview</h4>
+                    <small>Plan, schedule and monitor production runs across all companies.</small>
                 </div>
                 <button
                     className="btn rounded-pill d-flex align-items-center gap-2 fw-semibold px-4 py-2"

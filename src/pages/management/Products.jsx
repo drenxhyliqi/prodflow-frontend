@@ -178,8 +178,7 @@ const Products = () => {
         <Layout>
             {/* Header */}
             <div
-                className="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-4 mb-4"
-                style={{ background: BRAND + '1a' }}
+                className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4"
             >
                 <div>
                     <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: BRAND }}>Catalog</p>

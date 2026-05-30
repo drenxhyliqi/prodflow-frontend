@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Layout from '../../layouts/Layout'
 import api from '../../api/axios'
 import { toast } from 'react-toastify';
-import { MdOutlineAddBox } from 'react-icons/md';
+import { MdOutlineAddBox, MdDeleteOutline } from 'react-icons/md';
 import Paginate from '../../components/Paginate';
-import { FaSearch } from 'react-icons/fa';
-import { Link, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaArrowRight, FaEdit } from "react-icons/fa";
+import { FaSearch, FaEdit } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 import { IoIosArrowBack } from "react-icons/io";
-import { MdDeleteOutline } from "react-icons/md";
+
+const BRAND    = '#035dad'
+const inputCls = 'form-control shadow-none rounded-3'
+const btnBrand = { backgroundColor: BRAND, color: '#fff', border: 'none' }
 
 const Companies = () => {
     const [companies, setCompanies] = useState([]);
@@ -128,166 +130,219 @@ const Companies = () => {
         setSearch(urlSearch);
     }, [location.search]);
 
+    /* ── EDIT MODE ─────────────────────────────────────── */
+    if (editCompany) return (
+        <Layout>
+            <button
+                onClick={() => setEditCompany(null)}
+                className='btn btn-transparent border-0 p-0 d-flex align-items-center fw-semibold'
+            >
+                <IoIosArrowBack className='me-2' />Turn back
+            </button>
+
+            <div className="card rounded-4 mt-3 border-0 shadow-sm">
+                <div className="card-header rounded-top-4 border-0 py-3 px-4" style={{ background: BRAND + '10' }}>
+                    <span className='fw-semibold' style={{ color: BRAND }}>
+                        Update Company <strong>#ID:{editCompany.cid}</strong>
+                    </span>
+                </div>
+                <div className="card-body px-4 pb-4">
+                    <form method='post' onSubmit={updateCompany}>
+                        <input type="hidden" id='cid' name='cid' value={editCompany.cid} required/>
+                        <div className="row g-3">
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Company Name</label>
+                                <input type="text" defaultValue={editCompany.name} className={inputCls} id="name" placeholder="Enter company name" />
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Sector</label>
+                                <input type="text" defaultValue={editCompany.sector} className={inputCls} id="sector" placeholder="Enter sector" />
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Location</label>
+                                <input type="text" defaultValue={editCompany.location} className={inputCls} id="location" placeholder="Enter location" />
+                            </div>
+                            <div className="col-12 col-md-4 d-flex align-items-end">
+                                <button
+                                    type={submitting ? 'button' : 'submit'}
+                                    disabled={submitting}
+                                    className="btn w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                                    style={btnBrand}
+                                >
+                                    <FaEdit /> {submitting ? 'Updating...' : 'Update Company'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Layout>
+    )
+
+    /* ── MAIN VIEW ─────────────────────────────────────── */
     return (
         <Layout>
-            {!editCompany && (
-                <>
-                    <h4 className='fw-bold'>Companies</h4>
-                    <small className='d-inline-block opacity-75'>Manage registered companies</small>
-                </>
-            )}
+            {/* Header */}
+            <div
+                className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4"
+            >
+                <div>
+                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: BRAND }}>Management</p>
+                    <h4 className='fw-bold mb-1'>Companies Overview</h4>
+                    <small className='text-muted'>Manage and track all registered companies.</small>
+                </div>
+                <button
+                    className="btn rounded-pill d-flex align-items-center gap-2 fw-semibold px-4 py-2"
+                    style={btnBrand}
+                    onClick={() => document.getElementById('create-form')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                    <MdOutlineAddBox size={18} /> New Company
+                </button>
+            </div>
 
-            {editCompany && (
-                <>
-                    <button onClick={() => setEditCompany(null)} className='btn btn-transparent border-0 p-0 d-flex align-items-center fw-semibold'><IoIosArrowBack className='me-2'/>Turn back</button>
-                </>
-            )}
-
-            {/* Edit Company */}
-            {editCompany && (
-                <>
-                    <div className="card rounded-4 mt-3">
-                        <div className="card-header rounded-4">
-                            <span className='fw-semibold'>Update Company <strong>#ID:{editCompany.cid}</strong></span>
+            {/* Create Form */}
+            <div id="create-form" className="card rounded-4 border-0 shadow-sm mb-4">
+                <div className="card-body px-4 pt-4 pb-3">
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                        <div style={{
+                            width: 36, height: 36, borderRadius: 10,
+                            background: BRAND + '18', color: BRAND,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
+                        }}>
+                            <MdOutlineAddBox />
                         </div>
-                        <div className="card-body">
-                            <form method='post' onSubmit={updateCompany}>
-                                <input type="hidden" id='cid' name='cid' value={editCompany.cid} required/>
-                                <div className="row g-3">
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="name" className="form-label">Company Name</label>
-                                        <input type="text" defaultValue={editCompany.name} className="form-control rounded-4 shadow-none" id="name" placeholder="Enter company name" />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="sector" className="form-label">Sector</label>
-                                        <input type="text" defaultValue={editCompany.sector} className="form-control rounded-4 shadow-none" id="sector" placeholder="Enter sector" />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="location" className="form-label">Location</label>
-                                        <input type="text" defaultValue={editCompany.location} className="form-control rounded-4 shadow-none" id="location" placeholder="Enter location" />
-                                    </div>
-                                    <div className="col-12">
-                                        {submitting ? (
-                                            <button type='button' className="btn btn-success rounded-4 d-flex align-items-center gap-1" disabled><FaEdit /> Updating...</button>
-                                        ) : (
-                                            <button type='submit' className="btn btn-success rounded-4 d-flex align-items-center gap-1"><FaEdit /> Update Company</button>
-                                        )}
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* Create Company */}
-            {!editCompany && (
-                <>
-                    <div className="card rounded-4 mt-3">
-                        <div className="card-header rounded-4">
-                            <span className='fw-semibold'>Register new Company</span>
-                        </div>
-                        <div className="card-body">
-                            <form method='post' onSubmit={createCompany}>
-                                <div className="row g-3">
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="name" className="form-label">Company Name</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="name" placeholder="Enter company name" />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="sector" className="form-label">Sector</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="sector" placeholder="Enter sector" />
-                                    </div>
-                                    <div className="col-12 col-md-6 col-lg-4">
-                                        <label htmlFor="location" className="form-label">Location</label>
-                                        <input type="text" className="form-control rounded-4 shadow-none" id="location" placeholder="Enter location" />
-                                    </div>
-                                    <div className="col-12">
-                                        {submitting ? (
-                                            <button type='button' className="btn btn-success rounded-4 d-flex align-items-center gap-1" disabled><MdOutlineAddBox /> Creating...</button>
-                                        ) : (
-                                            <button type='submit' className="btn btn-success rounded-4 d-flex align-items-center gap-1"><MdOutlineAddBox /> Create Company</button>
-                                        )}
-                                    </div>
-                                </div>
-                            </form>
+                        <div>
+                            <p className="fw-semibold mb-0">Register new Company</p>
+                            <small className="text-muted">Fill in the details to add a new company</small>
                         </div>
                     </div>
 
-                    {/* Companies List */}
-                    <div className="card rounded-4 my-4">
-                        <div className="card-header rounded-4">
-                            <span className='fw-semibold'>Companies List</span>
-                        </div>
-                        <div className="card-body">
-                            <div className="mb-3">
-                                <form onSubmit={handleSearch}>
-                                    <div className="input-group mb-3">
-                                        <input type="search" name='search' defaultValue={search} className="form-control rounded-start-4 shadow-none" placeholder="Search..." aria-describedby="button-addon2"/>
-                                        <button className="btn btn-primary rounded-end-4" type="submit" id="button-addon2"><FaSearch /></button>
-                                    </div>
-                                </form>
+                    <form method='post' onSubmit={createCompany}>
+                        <div className="row g-3 pb-2">
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Company Name</label>
+                                <input type="text" className={inputCls} id="name" placeholder="Enter company name" />
                             </div>
-                            <div className="table-responsive">
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th className='text-nowrap' scope="col">#</th>
-                                            <th className='text-nowrap' scope="col">Company</th>
-                                            <th className='text-nowrap' scope="col">Sector</th>
-                                            <th className='text-nowrap' scope="col">Location</th>
-                                            <th className='text-nowrap' scope="col">Status</th>
-                                            <th className='text-end text-nowrap' scope="col">Operations</th>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Sector</label>
+                                <input type="text" className={inputCls} id="sector" placeholder="Enter sector" />
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <label className="form-label fw-semibold small">Location</label>
+                                <input type="text" className={inputCls} id="location" placeholder="Enter location" />
+                            </div>
+                            <div className="col-12 col-md-4 d-flex align-items-end">
+                                <button
+                                    type={submitting ? 'button' : 'submit'}
+                                    disabled={submitting}
+                                    className="btn w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                                    style={btnBrand}
+                                >
+                                    <MdOutlineAddBox size={18} />
+                                    {submitting ? 'Creating...' : 'Create Company'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* Companies List */}
+            <div className="card rounded-4 border-0 shadow-sm mb-4">
+                <div className="card-body px-4 pt-4">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <p className="fw-semibold mb-0">Companies List</p>
+                            <small className="text-muted">{pagination.total || 0} entries</small>
+                        </div>
+                        <form onSubmit={handleSearch} style={{ minWidth: 220 }}>
+                            <div className="input-group">
+                                <span className="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <FaSearch className="text-muted" size={13} />
+                                </span>
+                                <input
+                                    type="search" name="search" defaultValue={search}
+                                    className="form-control border-start-0 shadow-none rounded-end-3"
+                                    placeholder="Search companies..."
+                                    style={{ fontSize: '0.875rem' }}
+                                />
+                            </div>
+                        </form>
+                    </div>
+
+                    <div className="table-responsive">
+                        <table className="table table-hover align-middle">
+                            <thead>
+                                <tr className="text-uppercase" style={{ fontSize: '0.7rem', letterSpacing: '0.06em', color: '#6b7280' }}>
+                                    <th className="text-nowrap fw-semibold">#</th>
+                                    <th className="text-nowrap fw-semibold">Company</th>
+                                    <th className="text-nowrap fw-semibold">Sector</th>
+                                    <th className="text-nowrap fw-semibold">Location</th>
+                                    <th className="text-nowrap fw-semibold">Status</th>
+                                    <th className="text-end text-nowrap fw-semibold">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {companies.length === 0 ? (
+                                    <tr><td colSpan="6" className="text-center text-muted py-4">No data to show...</td></tr>
+                                ) : (
+                                    companies.map((company) => (
+                                        <tr key={company.cid}>
+                                            <td className="text-nowrap text-muted small">#{company.cid}</td>
+                                            <td className="text-nowrap fw-semibold">{company.name}</td>
+                                            <td className="text-nowrap text-muted">{company.sector}</td>
+                                            <td className="text-nowrap text-muted">{company.location}</td>
+                                            <td className="text-nowrap">
+                                                {(() => {
+                                                    const s = (company.status || '').toLowerCase();
+                                                    const cfg = s === 'active'
+                                                        ? { backgroundColor: '#d1fae5', color: '#065f46' }
+                                                        : s === 'inactive' || s === 'disabled'
+                                                            ? { backgroundColor: '#fee2e2', color: '#991b1b' }
+                                                            : { backgroundColor: '#f3f4f6', color: '#6b7280' };
+                                                    return (
+                                                        <span className="badge rounded-pill px-3 py-1" style={{ fontSize: '0.72rem', ...cfg }}>
+                                                            {company.status || '—'}
+                                                        </span>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td className="text-end text-nowrap">
+                                                <button onClick={() => checkEditCompany(company.cid)} className="btn btn-sm me-1" style={{ color: BRAND, background: BRAND + '12' }}>
+                                                    <FaEdit size={15} />
+                                                </button>
+                                                <button onClick={() => setDeleteId(company.cid)} className="btn btn-sm" style={{ color: '#ef4444', background: '#ef444412' }}>
+                                                    <MdDeleteOutline size={18} />
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {companies.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="6" className="text-center">No data to show...</td>
-                                            </tr>
-                                        ) : (
-                                            companies.map((company, index) => (
-                                                <tr key={company.cid}>
-                                                    <td className='text-nowrap'>{company.cid}</td>
-                                                    <td className='text-nowrap'>{company.name}</td>
-                                                    <td className='text-nowrap'>{company.sector}</td>
-                                                    <td className='text-nowrap'>{company.location}</td>
-                                                    <td className='text-nowrap'>{company.status}</td>
-                                                    <td className='text-end text-nowrap'>
-                                                        <button onClick={() => checkEditCompany(company.cid)} className="btn btn-success btn-sm shadow-sm me-2"><FaEdit size={20} /></button>
-                                                        <button onClick={() => setDeleteId(company.cid)} className="btn btn-danger btn-sm shadow-sm"><MdDeleteOutline size={20} /></button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* Pagination */}
-                            <Paginate data={pagination} />
-                        </div>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
 
-                    {/* Delete Company */}
-                    {deleteId && (
-                        <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3" style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}>
-                            <div className="bg-white shadow-lg rounded-4 p-3 border">
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Confirm deletion</strong>
-                                        <p className="mb-0 small text-muted">Are you sure you want to delete this company with <strong>#ID: {deleteId}</strong>?</p>
-                                    </div>
-                                    <button className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)}></button>
-                                </div>
-                                <div className="d-flex justify-content-end mt-3">
-                                    <button className="btn btn-light me-2" onClick={() => setDeleteId(null)}>Cancel</button>
-                                    <button className="btn btn-danger" onClick={handleDelete}>Confirm</button>
-                                </div>
+                    <Paginate data={pagination} />
+                </div>
+            </div>
+
+            {/* Delete confirmation */}
+            {deleteId && (
+                <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 px-3" style={{ zIndex: 1050, width: '100%', maxWidth: '500px' }}>
+                    <div className="bg-white shadow-lg rounded-4 p-3 border">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Confirm deletion</strong>
+                                <p className="mb-0 small text-muted">Are you sure you want to delete company <strong>#ID: {deleteId}</strong>?</p>
                             </div>
+                            <button className="btn-close ms-2 shadow-none" onClick={() => setDeleteId(null)} />
                         </div>
-                    )}
-                </>
+                        <div className="d-flex justify-content-end mt-3 gap-2">
+                            <button className="btn btn-light rounded-3" onClick={() => setDeleteId(null)}>Cancel</button>
+                            <button className="btn btn-danger rounded-3" onClick={handleDelete}>Confirm</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </Layout>
     )

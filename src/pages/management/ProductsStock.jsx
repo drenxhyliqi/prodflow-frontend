@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Layout from '../../layouts/Layout'
 import api from '../../api/axios'
 import { toast } from 'react-toastify';
-import { MdOutlineAddBox } from 'react-icons/md';
 import Paginate from '../../components/Paginate';
 import { FaSearch } from 'react-icons/fa';
-import { Link, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaArrowRight, FaEdit } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
-import { MdDeleteOutline } from "react-icons/md";
+import { useLocation } from 'react-router-dom';
+import { BsBoxSeam } from 'react-icons/bs';
+
+const BRAND = '#035dad'
+
+const stockCfg = (qty) => {
+    const n = Number(qty);
+    if (n < 0)  return { backgroundColor: '#fee2e2', color: '#991b1b' };
+    if (n === 0) return { backgroundColor: '#f3f4f6', color: '#6b7280' };
+    if (n <= 10) return { backgroundColor: '#fef9c3', color: '#854d0e' };
+    return              { backgroundColor: '#d1fae5', color: '#065f46' };
+}
 
 const ProductsStock = () => {
     const [productsStock, setProductsStock] = useState([]);
@@ -27,9 +34,7 @@ const ProductsStock = () => {
                 setProductsStock(response.data.data);
                 setPagination(response.data);
             })
-            .catch(() => {
-                toast.error('Failed to fetch products stock.');
-            });
+            .catch(() => toast.error('Failed to fetch products stock.'));
     }
 
     // Search Products Stock
@@ -53,44 +58,73 @@ const ProductsStock = () => {
 
     return (
         <Layout>
-            <h4 className='fw-bold'>Products Stock</h4>
-            <small className='d-inline-block opacity-75'>Manage registered products stock</small>
-
-            {/* Products List */}
-            <div className="card rounded-4 my-4">
-                <div className="card-header rounded-4">
-                    <span className='fw-semibold'>Products List</span>
+            {/* Header */}
+            <div
+                className="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4 mb-4"
+            >
+                <div>
+                    <p className="mb-1 fw-semibold text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: BRAND }}>Inventory</p>
+                    <h4 className="fw-bold mb-1">Products Stock</h4>
+                    <small className="text-muted">Monitor current stock levels for all products.</small>
                 </div>
-                <div className="card-body">
-                    <div className="mb-3">
-                        <form onSubmit={handleSearch}>
-                            <div className="input-group mb-3">
-                                <input type="search" name='search' defaultValue={search} className="form-control rounded-start-4 shadow-none" placeholder="Search..." aria-describedby="button-addon2"/>
-                                <button className="btn btn-primary rounded-end-4" type="submit" id="button-addon2"><FaSearch /></button>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(255,255,255,0.16)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <BsBoxSeam size={22} />
+                </div>
+            </div>
+
+            {/* List Card */}
+            <div className="card rounded-4 border-0 shadow-sm mb-4">
+                <div className="card-body px-4 pt-4">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <p className="fw-semibold mb-0">Stock Overview</p>
+                            <small className="text-muted">{pagination.total || 0} products</small>
+                        </div>
+                        <form onSubmit={handleSearch} style={{ minWidth: 220 }}>
+                            <div className="input-group">
+                                <span className="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <FaSearch className="text-muted" size={13} />
+                                </span>
+                                <input
+                                    type="search"
+                                    name="search"
+                                    defaultValue={search}
+                                    className="form-control border-start-0 shadow-none rounded-end-3"
+                                    placeholder="Search products..."
+                                    style={{ fontSize: '0.875rem' }}
+                                />
                             </div>
                         </form>
                     </div>
+
                     <div className="table-responsive">
-                        <table className="table">
+                        <table className="table table-hover align-middle">
                             <thead>
-                                <tr>
-                                    <th className='text-nowrap' scope="col">#</th>
-                                    <th className='text-nowrap' scope="col">Product</th>
-                                    <th className='text-nowrap text-end' scope="col">Stock(Units)</th>
+                                <tr className="text-uppercase" style={{ fontSize: '0.7rem', letterSpacing: '0.06em', color: '#6b7280' }}>
+                                    <th className="fw-semibold text-nowrap">#</th>
+                                    <th className="fw-semibold text-nowrap">Product</th>
+                                    <th className="fw-semibold text-nowrap text-end">Unit</th>
+                                    <th className="fw-semibold text-nowrap text-end">Current Stock</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {productsStock.length === 0 ? (
                                     <tr>
-                                        <td colSpan="6" className="text-center">No data to show...</td>
+                                        <td colSpan="4" className="text-center text-muted py-4">No data to show...</td>
                                     </tr>
                                 ) : (
-                                    productsStock.map((product, index) => (
+                                    productsStock.map((product) => (
                                         <tr key={product.pid}>
-                                            <td className='text-nowrap'>{product.pid}</td>
-                                            <td className='text-nowrap'>{product.product}</td>
-                                            <td className={`text-nowrap text-end fw-semibold ${Number(product.product_stock) < 0 ? 'text-danger' : '' }`}>
-                                                {product.product_stock} ({product.unit})
+                                            <td className="text-nowrap text-muted small">#{product.pid}</td>
+                                            <td className="text-nowrap fw-semibold">{product.product}</td>
+                                            <td className="text-nowrap text-end text-muted">{product.unit}</td>
+                                            <td className="text-nowrap text-end">
+                                                <span
+                                                    className="badge rounded-pill px-3 py-1"
+                                                    style={{ fontSize: '0.78rem', fontWeight: 700, ...stockCfg(product.product_stock) }}
+                                                >
+                                                    {product.product_stock}
+                                                </span>
                                             </td>
                                         </tr>
                                     ))
@@ -99,7 +133,6 @@ const ProductsStock = () => {
                         </table>
                     </div>
 
-                    {/* Pagination */}
                     <Paginate data={pagination} />
                 </div>
             </div>

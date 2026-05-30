@@ -194,25 +194,64 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* ── Welcome Banner ─────────────────────────────── */}
-            <div className="rounded-4 px-4 py-4 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3"
-                style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #1d4ed8 100%)`, color: 'white' }}>
-                <div>
-                    <p style={{ fontSize: '0.68rem', letterSpacing: '1.5px', fontWeight: 700, opacity: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-                        Welcome back, {userName}
-                    </p>
-                    <h3 style={{ fontWeight: 800, marginBottom: 6, fontSize: '1.45rem' }}>Here's what's happening today</h3>
-                    <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: 0 }}>
-                        {!stats ? 'Loading company data...' : (() => {
-                            const efficiency = Number(stats.production?.efficiency_rate || 0);
-                            const revenue    = Number(stats.revenue?.this_month || 0);
-                            const orders     = Number(stats.transactions?.this_month || 0);
-                            if (efficiency > 0) return `Production is running at ${efficiency}% efficiency this month.`;
-                            if (revenue    > 0) return `${fmtMoney(revenue)} in revenue generated this month.`;
-                            if (orders     > 0) return `${fmt(orders)} order${orders !== 1 ? 's' : ''} placed this month.`;
-                            return 'No activity recorded yet for this period.';
-                        })()}
-                    </p>
+            {/* ── Welcome Banner (Hero) ──────────────────────── */}
+            <div className="hero-banner px-4 px-md-5 py-4 py-md-5 mb-4">
+                {/* Decorative floating blobs */}
+                <span className="hero-blob hero-blob-1" />
+                <span className="hero-blob hero-blob-2" />
+                <span className="hero-blob hero-blob-3" />
+
+                <div className="position-relative d-flex justify-content-between align-items-center flex-wrap gap-4" style={{ zIndex: 1 }}>
+                    {/* Greeting + headline */}
+                    <div style={{ minWidth: 0 }}>
+                        <p className="mb-2 d-flex align-items-center gap-2" style={{ fontSize: '0.7rem', letterSpacing: '2px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
+                            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#bfdbfe', boxShadow: '0 0 0 3px rgba(191,219,254,0.25)' }} />
+                            {(() => {
+                                const h = new Date().getHours();
+                                const g = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+                                return `${g}, ${userName}`;
+                            })()}
+                        </p>
+                        <h3 className="mb-2" style={{ fontWeight: 800, fontSize: 'clamp(1.4rem, 2.6vw, 1.9rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                            Here's what's happening today
+                        </h3>
+                        <p className="mb-0" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.82)', maxWidth: 460 }}>
+                            {!stats ? 'Loading company data...' : (() => {
+                                const efficiency = Number(stats.production?.efficiency_rate || 0);
+                                const revenue    = Number(stats.revenue?.this_month || 0);
+                                const orders     = Number(stats.transactions?.this_month || 0);
+                                if (efficiency > 0) return `Production is running at ${efficiency}% efficiency this month.`;
+                                if (revenue    > 0) return `${fmtMoney(revenue)} in revenue generated this month.`;
+                                if (orders     > 0) return `${fmt(orders)} order${orders !== 1 ? 's' : ''} placed this month.`;
+                                return 'No activity recorded yet for this period.';
+                            })()}
+                        </p>
+                    </div>
+
+                    {/* Glass stat highlights */}
+                    {stats && (() => {
+                        const highlights = [];
+                        if (stats.revenue?.this_month != null)
+                            highlights.push({ icon: <HiOutlineCurrencyDollar size={16} />, label: 'Revenue', value: fmtMoney(stats.revenue.this_month) });
+                        if (stats.transactions?.this_month != null)
+                            highlights.push({ icon: <FiShoppingCart size={15} />, label: 'Orders', value: fmt(stats.transactions.this_month) });
+                        if (stats.production?.efficiency_rate != null && Number(stats.production.efficiency_rate) > 0)
+                            highlights.push({ icon: <MdOutlineBarChart size={16} />, label: 'Efficiency', value: `${stats.production.efficiency_rate}%` });
+
+                        return (
+                            <div className="d-flex flex-wrap gap-2 gap-md-3">
+                                {highlights.map((h, i) => (
+                                    <div key={i} className="dash-chip">
+                                        <div className="d-flex align-items-center gap-2 mb-2">
+                                            <span className="dash-chip-icon">{h.icon}</span>
+                                            <span style={{ fontSize: '0.66rem', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{h.label}</span>
+                                        </div>
+                                        <div style={{ fontSize: '1.15rem', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{h.value}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
 
